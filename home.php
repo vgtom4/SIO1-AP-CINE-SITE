@@ -6,17 +6,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="logo.ico">
+    <link rel="stylesheet" href="style/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
+
     <title>Accueil</title>
 </head>
 
 <body>
-    <form method="get" action="home.php">
-        Titre : <input type="text" name="txttitre" /><br />
-        Acteurs.trices : <input type="text" name="txtact" /><br />
-        Réalisateurs.trices : <input type="text" name="txtreal" /><br />
-        <select name="cbopublic">
-            <option></option>
-            <?php
+    <div class="search-bar">
+        <form method="get" action="home.php">
+            <label for="title-input">Titre :</label>
+            <input type="text" name="txttitre" />
+            <label for="actor-input">Acteur :</label>
+            <input type="text" name="txtact" />
+            <label for="director-input">Réalisateur :</label>
+            <input type="text" name="txtreal" />
+            <label for="public-select">Public :</label>
+            <select name="cbopublic">
+                <option></option>
+                <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
                 $req = $bdd->prepare("select * from public");
@@ -32,11 +40,12 @@
                 $req->closeCursor();
                 $bdd=null;
              ?>
-        </select> <br />
-        <select name="cbogenres">
-            <option></option>
+            </select>
+            <label for="genre-select">Genre :</label>
+            <select name="cbogenres">
+                <option></option>
 
-            <?php
+                <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
                 $req = $bdd->prepare("select * from genre");
@@ -52,11 +61,12 @@
                 $req->closeCursor();
                 $bdd=null;
              ?>
-        </select> <br />
+            </select>
 
 
-        <input type="submit" name="btnvalider" value="Rechercher">
-    </form>
+            <input type="submit" name="btnvalider" value="Rechercher">
+        </form>
+    </div>
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");           
     if(isset($_GET["btnvalider"])==true) {
