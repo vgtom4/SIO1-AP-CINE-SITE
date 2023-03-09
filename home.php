@@ -15,6 +15,7 @@
         Acteurs.trices : <input type="text" name="txtact" /><br />
         Réalisateurs.trices : <input type="text" name="txtreal" /><br />
         <select name="cbopublic">
+            <option></option>
             <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
@@ -33,6 +34,8 @@
              ?>
         </select> <br />
         <select name="cbogenres">
+            <option></option>
+
             <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
@@ -57,61 +60,73 @@
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");           
     if(isset($_GET["btnvalider"])==true) {
-        if(isset($_GET["txttitre"])==true) {
-            $req = $bdd->prepare("select * from film where titre like='%".$_GET['txttitre']."%'");
-            $req->execute();
-            $uneligne = $req->fetch();
-            while ($uneligne!=null)
-            {
-                echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
-                $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
-        }
-        if(isset($_GET["txtact"])==true) {
-            $req = $bdd->prepare("select * from film where acteurs like='%".$_GET['txtact']."%'");
-            $req->execute();
-            $uneligne = $req->fetch();
-            while ($uneligne!=null)
-            {
-                echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
-                $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
-        }
-        if(isset($_GET["txtreal"])==true) {
-            $req = $bdd->prepare("select * from film where realisateurs like='%".$_GET['txtreal']."%'");
-            $req->execute();
-            $uneligne = $req->fetch();
-            while ($uneligne!=null)
-            {
-                echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
-                $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
-        }
+        
+        $requete = ("select * from film natural join concerner where titre like'%".$_GET['txttitre']."%' and acteurs like'%".$_GET['txtact']."%'
+                                 and realisateurs like'%".$_GET['txtreal']."%' ");
+
+                                 
+
         if(isset($_GET["cbopublic"])==true) {
-            $req = $bdd->prepare("select * from film where nopublic='".$_GET['cbopublic']."'");
-            $req->execute();
-            $uneligne = $req->fetch();
-            while ($uneligne!=null)
-            {
-                echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
-                $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
+            $requete+= ("and nopublic='".$_GET['cbopublic']."' ");
         }
-        if(isset($_GET["txtgenr"])==true) {
-            $req = $bdd->prepare("select * from genre where nogenre='".$_GET['cbogenre']."'");
-            $req->execute();
-            $uneligne = $req->fetch();
-            while ($uneligne!=null)
-            {
-                echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
-                $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
+        
+        if(isset($_GET["cbogenres"])==true) {
+            $requete+= ("and nogenre='".$_GET['cbogenres']."' ");
         }
+        $req = $bdd->prepare($requete);
+        $req->execute();
+        $uneligne = $req->fetch();
+        while ($uneligne!=null)
+        {
+            echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+            $uneligne = $req->fetch();
+        }
+        $req->closeCursor();
+        
+        // if(isset($_GET["txtact"])==true) {
+        //     $req = $bdd->prepare("select * from film where acteurs like='%".$_GET['txtact']."%'");
+        //     $req->execute();
+        //     $uneligne = $req->fetch();
+        //     while ($uneligne!=null)
+        //     {
+        //         echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+        //         $uneligne = $req->fetch();
+        //     }
+        //     $req->closeCursor();
+        // }
+        // if(isset($_GET["txtreal"])==true) {
+        //     $req = $bdd->prepare("select * from film where realisateurs like='%".$_GET['txtreal']."%'");
+        //     $req->execute();
+        //     $uneligne = $req->fetch();
+        //     while ($uneligne!=null)
+        //     {
+        //         echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+        //         $uneligne = $req->fetch();
+        //     }
+        //     $req->closeCursor();
+        // }
+        // if(isset($_GET["cbopublic"])==true) {
+        //     $req = $bdd->prepare("select * from film where nopublic='".$_GET['cbopublic']."'");
+        //     $req->execute();
+        //     $uneligne = $req->fetch();
+        //     while ($uneligne!=null)
+        //     {
+        //         echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+        //         $uneligne = $req->fetch();
+        //     }
+        //     $req->closeCursor();
+        // }
+        // if(isset($_GET["txtgenr"])==true) {
+        //     $req = $bdd->prepare("select * from genre where nogenre='".$_GET['cbogenre']."'");
+        //     $req->execute();
+        //     $uneligne = $req->fetch();
+        //     while ($uneligne!=null)
+        //     {
+        //         echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+        //         $uneligne = $req->fetch();
+        //     }
+        //     $req->closeCursor();
+        // }
     }
     $bdd=null;
 
