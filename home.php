@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <a href="projection.php">Projections</a>
     <form method="get" action="home.php">
         Titre : <input type="text" name="txttitre" /><br />
         Acteurs.trices : <input type="text" name="txtact" /><br />
