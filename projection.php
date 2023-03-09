@@ -32,10 +32,13 @@
         $uneligne = $req->fetch();
         if ($uneligne == null) {
             echo "Il n'y a pas de projection pour cette date";
-        }
-        while ($uneligne != null) {
-            echo (date("H\hi", strtotime($uneligne["heureproj"])) . "  $uneligne[titre] $uneligne[nosalle]<br/>");
-            $uneligne = $req->fetch();
+        }else{
+            echo "<table><tr> <th>Horaire</th> <th>Film</th> <th>Salle</th> </tr>";
+            while ($uneligne != null) {
+                echo ("<tr> <td>".date("H\hi", strtotime($uneligne["heureproj"])) . "</td> <td>$uneligne[titre]</td> <td>$uneligne[nosalle]</td></tr>");
+                $uneligne = $req->fetch();
+            }
+            echo "</table>";
         }
         $req->closeCursor();
     }
