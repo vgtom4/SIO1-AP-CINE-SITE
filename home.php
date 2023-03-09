@@ -5,19 +5,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <link rel="icon" href="logo.ico">
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="icon" href="assets/media/logo.png">
+    <link rel="stylesheet" href="assets/style/style.css">
     <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
 
-=======
-    <link rel="icon" href="assets/media/logo.png">
->>>>>>> 387dbea71c31d2e6712c839eee3067aff4748ea4
     <title>Accueil</title>
 </head>
 
 <body>
-<<<<<<< HEAD
+    <a href="projection.php">Projections</a>
     <div class="search-bar">
         <form method="get" action="home.php">
             <label for="title-input">Titre :</label>
@@ -30,16 +26,6 @@
             <select name="cbopublic">
                 <option></option>
                 <?php
-=======
-    <a href="projection.php">Projections</a>
-    <form method="get" action="home.php">
-        Titre : <input type="text" name="txttitre" /><br />
-        Acteurs.trices : <input type="text" name="txtact" /><br />
-        Réalisateurs.trices : <input type="text" name="txtreal" /><br />
-        <select name="cbopublic">
-            <option></option>
-            <?php
->>>>>>> 387dbea71c31d2e6712c839eee3067aff4748ea4
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
                 $req = $bdd->prepare("select * from public");
