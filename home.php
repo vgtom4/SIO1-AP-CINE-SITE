@@ -33,7 +33,13 @@
                 $uneligne = $req->fetch();
                 while ($uneligne!=null)
                 {
-                    echo ("<option value=".$uneligne['nopublic'].">".$uneligne['libpublic']."</option>");
+                    if (isset($_GET["cbopublic"])==true && $_GET["cbopublic"]==$uneligne["nopublic"]){
+                        echo ("<option value=$uneligne[nopublic] selected>$uneligne[libpublic]</option>");
+                    }
+                    else 
+                    {
+                        echo ("<option value=$uneligne[nopublic]>$uneligne[libpublic]</option>");
+                    }
                     $uneligne = $req->fetch();
 
                 }

@@ -10,21 +10,22 @@
 </head>
 
 <body>
+    <a href="home.php">Accueil</a>
     <?php
-    echo "<form method='get' action='projection.php'>";
-    if (isset($_GET["btnvalider"]) == true) {
-        echo "Date : <input type='date' name='date' value='" . $_GET["date"] . "'/><br />";
+    echo "<form method='POST' action='projection.php'>";
+    if (isset($_POST["btnvalider"]) == true) {
+        echo "Date : <input type='date' name='date' value='" . $_POST["date"] . "'/><br />";
     } else {
         echo "Date : <input type='date' name='date' value='" . date("Y-m-d") . "'/><br />";
     }
     echo "<input type='submit' name='btnvalider' value='Rechercher'>";
     echo "</form>";
 
-    if (isset($_GET["btnvalider"]) == true) {
+    if (isset($_POST["btnvalider"]) == true) {
         $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
         // Création de la rêquete qui permet d'afficher les projections de la date saisie par l'utilisateur
-        $requete = ("select distinct * from projection natural join film where dateproj ='$_GET[date]' order by heureproj, nosalle");
+        $requete = ("select distinct * from projection natural join film where dateproj ='$_POST[date]' order by heureproj, nosalle");
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
