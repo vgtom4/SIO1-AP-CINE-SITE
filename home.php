@@ -92,7 +92,6 @@
             }
             $requete = substr($requete, 0, -2).")";
         }
-        echo $requete;
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
