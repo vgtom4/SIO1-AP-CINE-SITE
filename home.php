@@ -18,13 +18,14 @@
         <form method="get" action="home.php">
             <label for="title-input">Titre :</label>
             <input type="text" name="txttitre" />
+            
             <label for="actor-input">Acteur :</label>
             <input type="text" name="txtact" />
             <label for="director-input">Réalisateur :</label>
             <input type="text" name="txtreal" />
             <label for="public-select">Public :</label>
             <select name="cbopublic">
-                <option></option>
+                <option value="" disabled selected hidden>Sélectionner un public</option>
                 <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
@@ -49,9 +50,7 @@
              ?>
             </select>
             <label for="genre-select">Genre :</label>
-            <select name="cbogenres">
-                <option></option>
-
+            <select name="cbogenres[]" multiple>
                 <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
@@ -60,7 +59,7 @@
                 $uneligne = $req->fetch();
                 while ($uneligne!=null)
                 {
-                    echo ("<option value=".$uneligne['nogenre'].">".$uneligne['libgenre']."</option>");
+                    echo ("<option value='$uneligne[nogenre]'>$uneligne[libgenre]</option>");
                     $uneligne = $req->fetch();
 
                 }
@@ -81,12 +80,15 @@
         $requete = ("select distinct nofilm, film.* from film natural join concerner where titre like'%".$_GET['txttitre']."%' and acteurs like'%".$_GET['txtact']."%'
                                  and realisateurs like'%".$_GET['txtreal']."%' ");
         //Si un public est renseigné, ajoute la recherche du public à la requête
-        if($_GET["cbopublic"]>=1) {
-            $requete.= (" and nopublic='".$_GET['cbopublic']."' ");
+        if(isset($_GET["cbopublic"]) == true) {
+            $requete.= (" and nopublic='$_GET[cbopublic]' ");
         }
-        //Si un genre est renseigné, ajoute la recherche du genre à la requête
-        if($_GET["cbogenres"]>=1) {
-            $requete.= (" and nogenre='".$_GET['cbogenres']."' ");
+        // Pour chaques genres sélectionnés, ceux-ci sont rajoutés à la requête
+        if(isset($_GET["cbogenres"]) == true) {
+            for ($i=0;$i<count($_GET["cbogenres"]);$i++)  
+            {
+                $requete.= (" and nogenre=".$_GET["cbogenres"][$i]." ");
+            }
         }
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);

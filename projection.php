@@ -14,9 +14,9 @@
     <?php
     echo "<form method='POST' action='projection.php'>";
     if (isset($_POST["btnvalider"]) == true) {
-        echo "Date : <input type='date' name='date' value='" . $_POST["date"] . "'/><br />";
+        echo "Date : <input type='date' name='date' value='$_POST[date]'/><br />";
     } else {
-        echo "Date : <input type='date' name='date' value='" . date("Y-m-d") . "'/><br />";
+        echo "Date : <input type='date' name='date' value='" . date("Y-m-d") . "' /><br />";
     }
     echo "<input type='submit' name='btnvalider' value='Rechercher'>";
     echo "</form>";
