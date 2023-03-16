@@ -85,11 +85,14 @@
         }
         // Pour chaques genres sélectionnés, ceux-ci sont rajoutés à la requête
         if(isset($_GET["cbogenres"]) == true) {
+            $requete.= (" and nogenre IN (");
             for ($i=0;$i<count($_GET["cbogenres"]);$i++)  
             {
-                $requete.= (" and nogenre=".$_GET["cbogenres"][$i]." ");
+                $requete.= ($_GET["cbogenres"][$i].", ");
             }
+            $requete = substr($requete, 0, -2).")";
         }
+        echo $requete;
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
