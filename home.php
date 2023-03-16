@@ -97,7 +97,7 @@
         $uneligne = $req->fetch();
         while ($uneligne!=null)
         {
-            echo ($uneligne["titre"] . " " . $uneligne["realisateurs"] . "<br/>");
+            echo ("$uneligne[titre] $uneligne[realisateurs]<br/>");
             $uneligne = $req->fetch();
         }
         $req->closeCursor();
