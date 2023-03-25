@@ -71,12 +71,12 @@
 
             $uneligne2 = $req2->fetchColumn();
 
-            echo (" Une projection : $uneligne[dateproj] $uneligne[heureproj] <a href='reservation2.php'>Réserver pour cette séance</a><br/>");
-            // echo $requete2;
+            echo ("<br/>Une projection : $uneligne[dateproj] $uneligne[heureproj] ");
             if ($uneligne2){
-                echo ("Il reste $uneligne2 places pour cette séance <br/> ");
+                echo ("<a href='reservation2.php'>Réserver pour cette séance</a><br/>");
+                echo ("Il reste $uneligne2 places pour cette séance <br/>");
             }else{
-                echo ("Aucune place disponible <br/> ");
+                echo ("<br/>Aucune place disponible <br/>");
             }
             
             $uneligne = $req->fetch();

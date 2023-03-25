@@ -15,7 +15,7 @@
 <body>
     <a href="projection.php">Projections</a>
     <div class="search-bar">
-        <form method="get" action="home.php">
+        <form method="POST" action="home.php">
             <label for="title-input">Titre :</label>
             <input type="text" name="txttitre" />
             
@@ -34,7 +34,7 @@
                 $uneligne = $req->fetch();
                 while ($uneligne!=null)
                 {
-                    if (isset($_GET["cbopublic"])==true && $_GET["cbopublic"]==$uneligne["nopublic"]){
+                    if (isset($_POST["cbopublic"])==true && $_POST["cbopublic"]==$uneligne["nopublic"]){
                         echo ("<option value=$uneligne[nopublic] selected>$uneligne[libpublic]</option>");
                     }
                     else 
@@ -75,20 +75,20 @@
     </div>
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");           
-    if(isset($_GET["btnvalider"])==true) {
+    if(isset($_POST["btnvalider"])==true) {
         //Génération de la première requête dans une variable en string avec uniquement le titre, les réalisateurs et acteurs
-        $requete = ("select distinct nofilm, film.* from film natural join concerner where titre like'%".$_GET['txttitre']."%' and acteurs like'%".$_GET['txtact']."%'
-                                 and realisateurs like'%".$_GET['txtreal']."%' ");
+        $requete = ("select distinct film.* from film natural join concerner where titre like'%".$_POST['txttitre']."%' and acteurs like'%".$_POST['txtact']."%'
+                                 and realisateurs like'%".$_POST['txtreal']."%' ");
         //Si un public est renseigné, ajoute la recherche du public à la requête
-        if(isset($_GET["cbopublic"]) == true) {
-            $requete.= (" and nopublic='$_GET[cbopublic]' ");
+        if(isset($_POST["cbopublic"]) == true) {
+            $requete.= (" and nopublic='$_POST[cbopublic]' ");
         }
         // Pour chaques genres sélectionnés, ceux-ci sont rajoutés à la requête
-        if(isset($_GET["cbogenres"]) == true) {
+        if(isset($_POST["cbogenres"]) == true) {
             $requete.= (" and nogenre IN (");
-            for ($i=0;$i<count($_GET["cbogenres"]);$i++)  
+            for ($i=0;$i<count($_POST["cbogenres"]);$i++)  
             {
-                $requete.= ($_GET["cbogenres"][$i].", ");
+                $requete.= ($_POST["cbogenres"][$i].", ");
             }
             $requete = substr($requete, 0, -2).")";
         }
@@ -97,9 +97,27 @@
         $req->execute();
         // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
         $uneligne = $req->fetch();
-        while ($uneligne!=null)
+
+        if (!$uneligne){
+            echo "Aucun film ne correspond à votre recherche";
+        }
+        while ($uneligne)
         {
-            echo ("$uneligne[titre] $uneligne[realisateurs]<br/>");
+            echo "<label>";
+            echo "<table cellpadding='5' onclick=\"document.getElementById('form_$uneligne[nofilm]').submit();\">";
+            echo "<tr>";
+            echo "<td rowspan='7'><img src='assets/media/affiches/$uneligne[imgaffiche]' width=100px></td>";
+            echo "<td>$uneligne[titre]</td>";
+            echo "</tr>";
+            echo "<tr><td>Durée : ".str_replace(":","h",date('G:i', strtotime($uneligne["duree"])))."</td></tr>";
+            echo "<tr><td>$uneligne[realisateurs]</td></tr>";
+            echo "<tr><td>$uneligne[acteurs]</td></tr>";
+            echo "</table>";
+            echo "<form id='form_$uneligne[nofilm]' method='post' action='film.php'>";
+            echo "<input type='hidden' name='nofilm' value='$uneligne[nofilm]'>";
+            echo "<input type='hidden' name='titre' value='$uneligne[titre]'>";
+            echo "</form>";
+            echo "</label>";
             $uneligne = $req->fetch();
         }
         $req->closeCursor();
