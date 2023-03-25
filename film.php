@@ -75,7 +75,8 @@
 
             if ($uneligne!=null){
                 $dateDeProj = $uneligne["dateproj"];
-                echo "Projections du $uneligne[dateproj] :<br/>";
+                $date = date('l j F Y', strtotime($uneligne["dateproj"]));
+                echo "Projections du $date :";
                 echo "<table cellpadding='5'>";
                 echo "<tr>";
                     echo "<th>Horaire</th>";
@@ -91,22 +92,24 @@
                 $uneligne2 = $req2->fetch();
                 
                 if ($dateDeProj!=$uneligne["dateproj"]){
+                    echo "</table>";
+                    $dateDeProj = $uneligne["dateproj"];
+                    $date = date('l j F Y', strtotime($uneligne["dateproj"]));
+                    echo "<br/>Projections du $date :";
                     echo "<table cellpadding='5'>";
-                    echo "<br/>Projections du $uneligne[dateproj] :";
-                    echo "<table>";
                     echo "<tr>";
-                    echo "<th>Horaire</th>";
-                    echo "<th>Places disponibles</th>";
+                        echo "<th>Horaire</th>";
+                        echo "<th>Places disponibles</th>";
                     echo "</tr>";
                 }
                 
                 echo "<tr>";
                 echo "<td>";
-                echo ("$uneligne[heureproj]");
+                echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])));
                 echo "</td>";
                 echo "<td>";
                 if ($uneligne2["nbplacerestante"]>0){
-                    echo ("Il reste $uneligne2[nbplacerestante] sur $uneligne2[nbplaces] places pour cette séance <td><a href='reservation.php'>Réserver pour cette séance</a></td>");
+                    echo ("$uneligne2[nbplacerestante] sur $uneligne2[nbplaces] <td><a href='reservation.php'>Réserver pour cette séance</a></td>");
                 }else{
                     echo ("Aucune place disponible");
                 }
