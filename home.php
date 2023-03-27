@@ -115,7 +115,7 @@
             echo "</table>";
             echo "<form id='form_$uneligne[nofilm]' method='post' action='film.php'>";
             echo "<input type='hidden' name='nofilm' value='$uneligne[nofilm]'>";
-            echo "<input type='hidden' name='titre' value='$uneligne[titre]'>";
+            echo "<input type='hidden' name='titre' value='".urlencode($uneligne["titre"])."'>";
             echo "</form>";
             echo "</label>";
             $uneligne = $req->fetch();
