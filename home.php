@@ -17,12 +17,14 @@
     <div class="search-bar">
         <form method="POST" action="home.php">
             <label for="title-input">Titre :</label>
-            <input type="text" name="txttitre" />
+            <input type="text" name="txttitre" value="<?php echo isset($_POST["txttitre"]) ? $_POST['txttitre'] : "" ?>"/>
             
             <label for="actor-input">Acteur :</label>
-            <input type="text" name="txtact" />
+            <input type="text" name="txtact" value="<?php echo isset($_POST["txtact"]) ? $_POST['txtact'] : "" ?>"/>
+
             <label for="director-input">Réalisateur :</label>
-            <input type="text" name="txtreal" />
+            <input type="text" name="txtreal" value="<?php echo isset($_POST["txtreal"]) ? $_POST['txtreal'] : "" ?>"/>
+
             <label for="public-select">Public :</label>
             <select name="cbopublic">
                 <option value="" selected>Sélectionner un public</option>
@@ -76,8 +78,12 @@
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");           
         //Génération de la première requête dans une variable en string avec uniquement le titre, les réalisateurs et acteurs
-        $requete = ("select distinct film.* from film natural join concerner where titre like\"%".str_replace("\'","\\'",$_POST['txttitre'])."%\" and acteurs like\"%".str_replace("\'","\\\'",$_POST['txtact'])."%\"
-                                 and realisateurs like\"%".str_replace("\'","\\\'",$_POST['txtreal'])."%\" ");
+        $titre = isset($_POST["txttitre"]) ? addslashes($_POST['txttitre']) : "";
+        $acteurs = isset($_POST["txtact"]) ? addslashes($_POST['txtact']) : "";
+        $realisateurs = isset($_POST["txtreal"]) ? addslashes($_POST['txtreal']) : "";
+
+        $requete = ("select distinct film.* from film natural join concerner where titre like\"%$titre%\" and acteurs like\"%$acteurs%\"
+                                 and realisateurs like\"%$realisateurs%\" ");
         //Si un public est renseigné, ajoute la recherche du public à la requête
         if(isset($_POST["cbopublic"]) == true && $_POST["cbopublic"] != "") {
             $requete.= (" and nopublic='$_POST[cbopublic]' ");
@@ -91,7 +97,6 @@
             }
             $requete = substr($requete, 0, -2).")";
         }
-        echo $requete;
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
