@@ -25,7 +25,7 @@
             <input type="text" name="txtreal" />
             <label for="public-select">Public :</label>
             <select name="cbopublic">
-                <option value="" disabled selected hidden>Sélectionner un public</option>
+                <option value="" selected>Sélectionner un public</option>
                 <?php
                 $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
@@ -75,16 +75,15 @@
     </div>
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");           
-    if(isset($_POST["btnvalider"])==true) {
         //Génération de la première requête dans une variable en string avec uniquement le titre, les réalisateurs et acteurs
-        $requete = ("select distinct film.* from film natural join concerner where titre like'%".$_POST['txttitre']."%' and acteurs like'%".$_POST['txtact']."%'
-                                 and realisateurs like'%".$_POST['txtreal']."%' ");
+        $requete = ("select distinct film.* from film natural join concerner where titre like\"%".str_replace("\'","\\'",$_POST['txttitre'])."%\" and acteurs like\"%".str_replace("\'","\\\'",$_POST['txtact'])."%\"
+                                 and realisateurs like\"%".str_replace("\'","\\\'",$_POST['txtreal'])."%\" ");
         //Si un public est renseigné, ajoute la recherche du public à la requête
-        if(isset($_POST["cbopublic"]) == true) {
+        if(isset($_POST["cbopublic"]) == true && $_POST["cbopublic"] != "") {
             $requete.= (" and nopublic='$_POST[cbopublic]' ");
         }
         // Pour chaques genres sélectionnés, ceux-ci sont rajoutés à la requête
-        if(isset($_POST["cbogenres"]) == true) {
+        if(isset($_POST["cbogenres"]) == true && $_POST["cbogenres"] != "") {
             $requete.= (" and nogenre IN (");
             for ($i=0;$i<count($_POST["cbogenres"]);$i++)  
             {
@@ -92,6 +91,7 @@
             }
             $requete = substr($requete, 0, -2).")";
         }
+        echo $requete;
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
@@ -121,7 +121,7 @@
             $uneligne = $req->fetch();
         }
         $req->closeCursor();
-    }
+
     $bdd=null;
 
 ?>
