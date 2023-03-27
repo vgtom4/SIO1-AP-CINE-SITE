@@ -9,81 +9,85 @@
     <!-- <link rel="stylesheet" href="assets/style/style.css"> -->
     <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
 
-    <title>Accueil</title>
+    <title>Reservation</title>
 </head>
 
 <body>
+<a href="home.php">Accueil</a>
     <a href="projection.php">Projections</a>
-    <div class="search-bar">
-        <form method="get" action="reservation.php">
-            <h1>Choisissez un film</h1>
-            <select name="cbofilm">
-                <option value="" disabled selected hidden>Sélectionnez un film</option>
-                <?php
-                $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
+    <a href="film.php">Debug Film</a>
+    <a href="reservation.php">Debug Reservation</a>
 
-                $req = $bdd->prepare("select * from film");
-                $req->execute();
-                $uneligne = $req->fetch();
-                while ($uneligne!=null)
-                {
-                    if (isset($_GET["cbofilm"])==true && $_GET["cbofilm"]==$uneligne["nofilm"]){
-                        echo ("<option value=$uneligne[nofilm] selected>$uneligne[titre]</option>");
-                    }
-                    else 
-                    {
-                        echo ("<option value=$uneligne[nofilm]>$uneligne[titre]</option>");
-                    }
-                    $uneligne = $req->fetch();
+    <div class="reservation-info">
+        <?php
+        if (isset($_GET["noproj"])){
+            $erreur = false;
+            $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
-                }
+            //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
+            $requete = ("select * from projection natural join film natural join salle where noproj=$_GET[noproj]");
+            // Préparation de la requête en utilisant la variable préparée auparavant
+            $req = $bdd->prepare($requete);
+            $req->execute();
+            // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
+            $uneligne = $req->fetch();
 
-                $req->closeCursor();
-                $bdd=null;
-             ?>
-            </select>
+            if ($uneligne){
+                echo "<h1>Réservation pour le film : $uneligne[titre]</h1>";
+                echo "<table cellpadding='5'>";
+                    echo "<tr>";
+                    echo "<td rowspan='7'><img src='assets/media/affiches/$uneligne[imgaffiche]' width=100px></td>";
+                    $date = date('l j F Y', strtotime($uneligne["dateproj"]));
+                    echo "<td>Date : $date</td>";
+                    echo "</tr>";
+                    echo "<tr><td>Horaire : ".str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])))."</td></tr>";
+                    echo "<tr><td>Salle $uneligne[nosalle]</td></tr>";
+                    echo "<tr><td>$uneligne[infoproj]</td></tr>";
+                echo "</table>";
+            }else{
+                echo "Erreur : projection inconnue";
+                $erreur = true;
+            }
 
+            $req->closeCursor();
+        }else{
+            echo "Erreur : problème de projection sélectionnée";
+            $erreur = true;
+        }
+        ?>
+    </div>
 
-
-            <input type="submit" name="btnvalider" value="Rechercher">
-        </form>
+    <div class="reservation-form">
+        <?php 
+        
+        $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_GET[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_GET[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_GET[noproj]");
+        $req2 = $bdd->prepare($requete2);
+        $req2->execute();
+        $uneligne2 = $req2->fetch();
+        
+        echo "<td>";
+        if ($uneligne2["nbplacerestante"]>0){
+            echo "<form method='get' action='reservation.php'>";
+            echo "<input type='hidden' name='noproj' value='$_GET[noproj]'>";
+            echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
+            echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
+            echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
+            echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' required></br>";
+            echo "<input type='submit' name='btnvalider' value='Reserver'>";
+            echo "</form>";
+        }else{
+            echo ("<h1>Séance complète.</h1>");
+            echo ("<h1>Aucune place disponible.</h1>");
+            echo ("<img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>");
+        }
+        ?>
+        
     </div>
     <?php 
     $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
     if(isset($_GET["btnvalider"])==true) {
-
-        if(isset($_GET["cbofilm"]) == true) {
-        //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-        $requete = ("select dateproj, noproj, heureproj from projection where nofilm=".$_GET['cbofilm']."");
-        }
-        // Préparation de la requête en utilisant la variable préparée auparavant
-        $req = $bdd->prepare($requete);
-        $req->execute();
-        // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
-        $uneligne = $req->fetch();
-
-        while ($uneligne!=null)
-        {
-            $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0)");
-            $req2 = $bdd->prepare($requete2);
-
-            $req2->execute();
-
-            $uneligne2 = $req2->fetchColumn();
-
-            echo ("<br/>Une projection : $uneligne[dateproj] $uneligne[heureproj] ");
-            if ($uneligne2){
-                echo ("<a href='reservation2.php'>Réserver pour cette séance</a><br/>");
-                echo ("Il reste $uneligne2 places pour cette séance <br/>");
-            }else{
-                echo ("<br/>Aucune place disponible <br/>");
-            }
-            
-            $uneligne = $req->fetch();
-        }
-        $req->closeCursor();
-        // test
-
+        echo "séance réservé</br>";
+        echo "mettre récapitulatif";
     }
     $bdd=null;
 

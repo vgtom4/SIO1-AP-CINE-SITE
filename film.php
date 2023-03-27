@@ -13,8 +13,10 @@
 </head>
 
 <body>
-    <a href="home.php">Home</a>
+    <a href="home.php">Accueil</a>
     <a href="projection.php">Projections</a>
+    <a href="film.php">Debug Film</a>
+    <a href="reservation.php">Debug Reservation</a>
 
     <div name='info-film'>
         </br>
@@ -65,7 +67,7 @@
 
             if(isset($_POST["nofilm"])) {
                 //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-                $requete = ("select dateproj, noproj, heureproj from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
+                $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
             }
             // Préparation de la requête en utilisant la variable préparée auparavant
             $req = $bdd->prepare($requete);
@@ -80,6 +82,7 @@
                 echo "<table cellpadding='5'>";
                 echo "<tr>";
                     echo "<th>Horaire</th>";
+                    echo "<th>Informations séance</th>";
                     echo "<th>Places disponibles</th>";
                 echo "</tr>";
             }
@@ -99,6 +102,7 @@
                     echo "<table cellpadding='5'>";
                     echo "<tr>";
                         echo "<th>Horaire</th>";
+                        echo "<th>Informations séance</th>";
                         echo "<th>Places disponibles</th>";
                     echo "</tr>";
                 }
@@ -108,8 +112,11 @@
                 echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])));
                 echo "</td>";
                 echo "<td>";
+                echo $uneligne["infoproj"];
+                echo "</td>";
+                echo "<td>";
                 if ($uneligne2["nbplacerestante"]>0){
-                    echo ("$uneligne2[nbplacerestante] sur $uneligne2[nbplaces] <td><a href='reservation.php'>Réserver pour cette séance</a></td>");
+                    echo ("$uneligne2[nbplacerestante] sur $uneligne2[nbplaces] <td><a href='reservation.php?noproj=$uneligne[noproj]'>Réserver pour cette séance</a></td>");
                 }else{
                     echo ("Aucune place disponible");
                 }

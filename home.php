@@ -13,7 +13,11 @@
 </head>
 
 <body>
+    <a href="home.php">Accueil</a>
     <a href="projection.php">Projections</a>
+    <a href="film.php">Debug Film</a>
+    <a href="reservation.php">Debug Reservation</a>
+
     <div class="search-bar">
         <form method="POST" action="home.php">
             <label for="title-input">Titre :</label>

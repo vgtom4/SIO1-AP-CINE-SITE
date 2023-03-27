@@ -11,6 +11,9 @@
 
 <body>
     <a href="home.php">Accueil</a>
+    <a href="projection.php">Projections</a>
+    <a href="film.php">Debug Film</a>
+    <a href="reservation.php">Debug Reservation</a>
     <?php
     echo "<form method='POST' action='projection.php'>";
     if (isset($_POST["btnvalider"]) == true) {
