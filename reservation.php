@@ -20,12 +20,12 @@
 
     <div class="reservation-info">
         <?php
-        if (isset($_GET["noproj"])){
+        if (isset($_POST["noproj"])){
             $erreur = false;
             $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
             //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-            $requete = ("select * from projection natural join film natural join salle where noproj=$_GET[noproj]");
+            $requete = ("select * from projection natural join film natural join salle where noproj=$_POST[noproj]");
             // Préparation de la requête en utilisant la variable préparée auparavant
             $req = $bdd->prepare($requete);
             $req->execute();
@@ -59,27 +59,26 @@
 
     <div class="reservation-form">
         <?php
-        if(isset($_GET["btnvalider"])) {
+        if(isset($_POST["btnvalider"])) {
             // Requête sql pour insérer la réservation
-            $requete3 = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_GET[txtpwd]', now(), '$_GET[txtpseudo]', '$_GET[nbplaceresa]', '$_GET[noproj]')");
+            $requete3 = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_POST[txtpwd]', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
             $req3 = $bdd->prepare($requete3);
             $req3->execute();
-            echo "reservation effectuée";
             $reservation=true;
         }else{
             $reservation=false;
         }
         
         if ($reservation==false){
-            if (isset($_GET["noproj"]) && $erreur == false){
-                $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_GET[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_GET[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_GET[noproj]");
+            if (isset($_POST["noproj"]) && $erreur == false){
+                $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
                 $req2 = $bdd->prepare($requete2);
                 $req2->execute();
                 $uneligne2 = $req2->fetch();
                 
                 if ($uneligne2["nbplacerestante"]>0){
-                    echo "<form method='get' action='reservation.php'>";
-                    echo "<input type='hidden' name='noproj' value='$_GET[noproj]'>";
+                    echo "<form method='POST' action='reservation.php'>";
+                    echo "<input type='hidden' name='noproj' value='$_POST[noproj]'>";
                     echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
                     echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
                     echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
@@ -95,8 +94,8 @@
             }
         }else{
             echo "<h2>Réservation effectuée</h2>";
-            echo "Client : $_GET[txtpseudo]";
-            echo "</br>Nombre de place réservée : $_GET[nbplaceresa]</br>";
+            echo "Client : $_POST[txtpseudo]";
+            echo "</br>Nombre de place réservée : $_POST[nbplaceresa]</br>";
 
             $requete4 = ("select max(noresa) as noresa from reservation");
             $req4 = $bdd->prepare($requete4);
@@ -109,13 +108,13 @@
             // Définir les informations de réservation
             $num_reservation = $noResa;
             $datetime_reservation = date("Y-m-d H:i:s");
-            $num_projection = $_GET["noproj"];
+            $num_projection = $_POST["noproj"];
             $date_projection = $uneligne["dateproj"];
             $horaire_projection = $uneligne["heureproj"];
             $salle_projection = $uneligne["nosalle"];
             $titre_film = $uneligne["titre"];
-            $pseudo_client = $_GET["txtpseudo"];
-            $nbplaceresa = $_GET["nbplaceresa"];
+            $pseudo_client = $_POST["txtpseudo"];
+            $nbplaceresa = $_POST["nbplaceresa"];
 
             // Concaténer les informations en une seule chaîne de caractères
             $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
@@ -123,20 +122,19 @@
             // Générer le QR code en tant que fichier temporaire
             $temp_file = tempnam(sys_get_temp_dir(), 'qr_');
             
-            QRcode::png($code_texte, "Reservation".$num_reservation, QR_ECLEVEL_L);
+            QRcode::png($code_texte, "assets/media/qrcode/Reservation".$num_reservation.".png", QR_ECLEVEL_L);
 
             echo "<h3>Voici votre QR code de réservation</h3>";
             // Afficher le QR code sur votre page PHP
-            echo "<img src='Reservation$num_reservation' alt='QR code'>";
+            echo "<img src='assets/media/qrcode/Reservation$num_reservation.png' alt='QR code'>";
 
             // Ajouter un bouton de téléchargement pour le QR code
-            echo "</br><a href='Reservation$num_reservation' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
+            echo "</br><a href='assets/media/qrcode/Reservation$num_reservation.png' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
             
             echo "</br></br><a href='home.php'>Retour à l'accueil</a>";
             $reservation=false;
         }
-        $req->closeCursor();
-
+        
         $bdd=null;
         ?>
         

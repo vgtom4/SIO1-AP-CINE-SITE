@@ -116,7 +116,11 @@
                 echo "</td>";
                 echo "<td>";
                 if ($uneligne2["nbplacerestante"]>0){
-                    echo ("$uneligne2[nbplacerestante] sur $uneligne2[nbplaces] <td><a href='reservation.php?noproj=$uneligne[noproj]'>Réserver pour cette séance</a></td>");
+                    echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]";
+                    echo "<td><form method='post' action='reservation.php'>";
+                    echo "<input type='hidden' name='noproj' value='$uneligne[noproj]'>";
+                    echo "<button type='submit'>Réserver pour cette séance</button>";
+                    echo "</form></td>";                
                 }else{
                     echo ("Aucune place disponible");
                 }
