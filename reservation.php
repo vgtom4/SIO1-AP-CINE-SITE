@@ -51,47 +51,96 @@
 
             $req->closeCursor();
         }else{
-            echo "Erreur : problème de projection sélectionnée";
+            echo "</br>Erreur : problème de projection sélectionnée";
             $erreur = true;
         }
         ?>
     </div>
 
     <div class="reservation-form">
-        <?php 
-        
-        $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_GET[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_GET[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_GET[noproj]");
-        $req2 = $bdd->prepare($requete2);
-        $req2->execute();
-        $uneligne2 = $req2->fetch();
-        
-        echo "<td>";
-        if ($uneligne2["nbplacerestante"]>0){
-            echo "<form method='get' action='reservation.php'>";
-            echo "<input type='hidden' name='noproj' value='$_GET[noproj]'>";
-            echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
-            echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
-            echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
-            echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' required></br>";
-            echo "<input type='submit' name='btnvalider' value='Reserver'>";
-            echo "</form>";
+        <?php
+        if(isset($_GET["btnvalider"])) {
+            // Requête sql pour insérer la réservation
+            $requete3 = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_GET[txtpwd]', now(), '$_GET[txtpseudo]', '$_GET[nbplaceresa]', '$_GET[noproj]')");
+            $req3 = $bdd->prepare($requete3);
+            $req3->execute();
+            echo "reservation effectuée";
+            $reservation=true;
         }else{
-            echo ("<h1>Séance complète.</h1>");
-            echo ("<h1>Aucune place disponible.</h1>");
-            echo ("<img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>");
+            $reservation=false;
         }
+        
+        if ($reservation==false){
+            if (isset($_GET["noproj"]) && $erreur == false){
+                $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_GET[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_GET[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_GET[noproj]");
+                $req2 = $bdd->prepare($requete2);
+                $req2->execute();
+                $uneligne2 = $req2->fetch();
+                
+                if ($uneligne2["nbplacerestante"]>0){
+                    echo "<form method='get' action='reservation.php'>";
+                    echo "<input type='hidden' name='noproj' value='$_GET[noproj]'>";
+                    echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
+                    echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
+                    echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
+                    echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' value='".bin2hex(openssl_random_pseudo_bytes(3))."' required></br>";
+                    echo "<input type='checkbox' name='check' required checked>J'accepte de me faire voler mes données et de me faire frapper par l'État.</br>";
+                    echo "<input type='submit' name='btnvalider' value='Reserver'>";
+                    echo "</form>";
+                }else{
+                    echo ("<h1>Séance complète.</h1>");
+                    echo ("<h1>Aucune place disponible.</h1>");
+                    echo ("<img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>");
+                }
+            }
+        }else{
+            echo "<h2>Réservation effectuée</h2>";
+            echo "Client : $_GET[txtpseudo]";
+            echo "</br>Nombre de place réservée : $_GET[nbplaceresa]</br>";
+
+            $requete4 = ("select max(noresa) as noresa from reservation");
+            $req4 = $bdd->prepare($requete4);
+            $req4->execute();
+            $noResa = $req4->fetchColumn();
+
+            // Inclure la bibliothèque PHP QR Code
+            require_once "assets/utils/phpqrcode/qrlib.php";
+
+            // Définir les informations de réservation
+            $num_reservation = $noResa;
+            $datetime_reservation = date("Y-m-d H:i:s");
+            $num_projection = $_GET["noproj"];
+            $date_projection = $uneligne["dateproj"];
+            $horaire_projection = $uneligne["heureproj"];
+            $salle_projection = $uneligne["nosalle"];
+            $titre_film = $uneligne["titre"];
+            $pseudo_client = $_GET["txtpseudo"];
+            $nbplaceresa = $_GET["nbplaceresa"];
+
+            // Concaténer les informations en une seule chaîne de caractères
+            $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
+            
+            // Générer le QR code en tant que fichier temporaire
+            $temp_file = tempnam(sys_get_temp_dir(), 'qr_');
+            
+            QRcode::png($code_texte, "Reservation".$num_reservation, QR_ECLEVEL_L);
+
+            echo "<h3>Voici votre QR code de réservation</h3>";
+            // Afficher le QR code sur votre page PHP
+            echo "<img src='Reservation$num_reservation' alt='QR code'>";
+
+            // Ajouter un bouton de téléchargement pour le QR code
+            echo "</br><a href='Reservation$num_reservation' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
+            
+            echo "</br></br><a href='home.php'>Retour à l'accueil</a>";
+            $reservation=false;
+        }
+        $req->closeCursor();
+
+        $bdd=null;
         ?>
         
     </div>
-    <?php 
-    $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
-    if(isset($_GET["btnvalider"])==true) {
-        echo "séance réservé</br>";
-        echo "mettre récapitulatif";
-    }
-    $bdd=null;
-
-?>
 </body>
 
 </html>
