@@ -9,14 +9,13 @@
     <!-- <link rel="stylesheet" href="assets/style/style.css"> -->
     <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
 
-    <title><?php echo isset($_POST["titre"]) ? urldecode($_POST["titre"]) : "ADMIN" ?></title>
+    <title>Gestion projection</title>
 </head>
 
 <body>
-    <a href="home.php">Accueil</a>
-    <a href="projection.php">Projections</a>
-    <a href="film.php">Debug Film</a>
-    <a href="reservation.php">Debug Reservation</a>
+    <a href="../../home.php">Retour page utilisateur</a></br>
+    <a href="protected.php">Home admin</a></br>
+    <a href="addreservation.php">Debug Gestion projection</a>
 
     <div name='info-film'>
         </br>
@@ -173,25 +172,16 @@
             </br>
 
             <?php 
-         if (isset($_POST["btnvalider"]) == true) {
-             echo "Date : <input type='date' name='date' value='$_POST[date]'/><br />";
-             echo "Heure : <input type='time' name='time' value='$_POST[time]'/><br />";
+            echo "Date : <input type='date' name='date' value='".(isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d"))."'/><br />";
+            echo "Heure : <input type='time' name='time' value='".(isset($_POST["time"]) ? $_POST["date"] : date("H:i")) . "' /><br />";
 
-         } else {
-             echo "Date : <input type='date' name='date' value='" . date("Y-m-d") . "' /><br />";
-             echo "Heure : <input type='time' name='time' value='" . date("H:i") . "' /><br />";
-
-         }
          echo "<input type='hidden' name='nofilm' value='$_POST[nofilm]'>";
-
          echo "<input type='submit' name='btnvalider' value='Rechercher'>";
 
          if (isset($_POST["btnvalider"]) == true) {
             $requete3="insert into projection values (null,'$_POST[date]','$_POST[time]','$_POST[txtInfo]',$_POST[nofilm],'$_POST[cbosalle]')";
-            echo $requete3;
             $req3=$bdd->prepare($requete3);
             $req3->execute();
-            echo "zouzou";
          }
 
          if(isset($_POST["btnsupprimer"])==true) {

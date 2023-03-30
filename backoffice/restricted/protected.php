@@ -9,14 +9,13 @@
     <link rel="stylesheet" href="../../assets/style/style.css">
     <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
 
-    <title>Accueil</title>
+    <title>Accueil ADMIN</title>
 </head>
 
 <body>
-    <a href="home.php">Accueil</a>
-    <a href="projection.php">Projections</a>
-    <a href="film.php">Debug Film</a>
-    <a href="reservation.php">Debug Reservation</a>
+    <a href="../../home.php">Retour page utilisateur</a></br>
+    <a href="protected.php">Home admin</a></br>
+    <a href="addreservation.php">Debug gestion projection</a>
 
     <div class="search-bar">
         <form method="POST" action="protected.php">

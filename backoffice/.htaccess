@@ -1,4 +1,4 @@
-AuthUserFile "c:\wamp64\www\AP-CINE-SITE\assets\.htpasswd"
+AuthUserFile "C:\wamp64\www\slam1\AP\AP-CINE-SITE\backoffice\.htpasswd"
 AuthName "Accès protégé"
 AuthType Basic
 Require valid-user

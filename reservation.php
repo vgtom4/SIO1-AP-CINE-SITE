@@ -90,7 +90,7 @@ include("includes/pageentete.php");
         $noResa = $req4->fetchColumn();
 
         // Inclure la bibliothèque PHP QR Code
-        require_once "assets/utils/phpqrcode/qrlib.php";
+        include("assets/utils/phpqrcode/qrlib.php");
 
         // Définir les informations de réservation
         $num_reservation = $noResa;
@@ -106,17 +106,14 @@ include("includes/pageentete.php");
         // Concaténer les informations en une seule chaîne de caractères
         $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
         
-        // Générer le QR code en tant que fichier temporaire
-        $temp_file = tempnam(sys_get_temp_dir(), 'qr_');
-        
-        QRcode::png($code_texte, "assets/media/qrcode/Reservation".$num_reservation.".png", QR_ECLEVEL_L);
+        QRcode::png($code_texte, "assets/media/qrcode/qrcode.png");
 
         echo "<h3>Voici votre QR code de réservation</h3>";
         // Afficher le QR code sur votre page PHP
-        echo "<img src='assets/media/qrcode/Reservation$num_reservation.png' alt='QR code'>";
+        echo "<img src='assets/media/qrcode/qrcode.png' alt='QR code'>";
 
         // Ajouter un bouton de téléchargement pour le QR code
-        echo "</br><a href='assets/media/qrcode/Reservation$num_reservation.png' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
+        echo "</br><a href='assets/media/qrcode/qrcode.png' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
         
         echo "</br></br><a href='home.php'>Retour à l'accueil</a>";
         $reservation=false;

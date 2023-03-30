@@ -43,6 +43,9 @@
       <li class="nav-item">
         <a class="nav-link" href="reservation.php">Debug Reservation</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="backoffice/restricted/protected.php">Gestion ADMIN</a>
+      </li>
     </ul>
   </div>
 </nav>
