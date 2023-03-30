@@ -1,51 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include("includes/connexion.php");
+include("includes/pageentete.php");
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="assets/media/logo.png">
-    <title>Projections</title>
-</head>
+<?php
+echo "<form method='POST' action='projection.php'>";
+    echo "Date : <input type='date' name='date' value='".(isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d"))."' onchange='form.submit()'/><br />";
+echo "</form>";
 
-<body>
-    <a href="home.php">Accueil</a>
-    <?php
-    echo "<form method='POST' action='projection.php'>";
-    if (isset($_POST["btnvalider"]) == true) {
-        echo "Date : <input type='date' name='date' value='$_POST[date]'/><br />";
-    } else {
-        echo "Date : <input type='date' name='date' value='" . date("Y-m-d") . "' /><br />";
-    }
-    echo "<input type='submit' name='btnvalider' value='Rechercher'>";
-    echo "</form>";
-
-    if (isset($_POST["btnvalider"]) == true) {
-        $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
-
-        // Création de la rêquete qui permet d'afficher les projections de la date saisie par l'utilisateur
-        $requete = ("select distinct * from projection natural join film where dateproj ='$_POST[date]' order by heureproj, nosalle");
-        // Préparation de la requête en utilisant la variable préparée auparavant
-        $req = $bdd->prepare($requete);
-        $req->execute();
-        // Recherche des projections dans la base de données
-        $uneligne = $req->fetch();
-        if ($uneligne == null) {
-            echo "Il n'y a pas de projection pour cette date";
-        }else{
-            echo "<table><tr> <th>Horaire</th> <th>Film</th> <th>Salle</th> </tr>";
-            while ($uneligne != null) {
-                echo ("<tr> <td>".date("H\hi", strtotime($uneligne["heureproj"])) . "</td> <td>$uneligne[titre]</td> <td>$uneligne[nosalle]</td></tr>");
-                $uneligne = $req->fetch();
-            }
-            echo "</table>";
+if (isset($_POST["date"]) == true) {
+    // Création de la rêquete qui permet d'afficher les projections de la date saisie par l'utilisateur
+    $requete = ("select distinct * from projection natural join film where dateproj ='$_POST[date]' order by heureproj, nosalle");
+    // Préparation de la requête en utilisant la variable préparée auparavant
+    $req = $bdd->prepare($requete);
+    $req->execute();
+    // Recherche des projections dans la base de données
+    $uneligne = $req->fetch();
+    if ($uneligne) {
+        echo "<table><tr> <th>Horaire</th> <th>Film</th> <th>Salle</th> </tr>";
+        while ($uneligne != null) {
+            echo ("<tr> <td>".date("H\hi", strtotime($uneligne["heureproj"])). "</td> <td>$uneligne[titre]</td> <td>$uneligne[nosalle]</td></tr>");
+            $uneligne = $req->fetch();
         }
-        $req->closeCursor();
+        echo "</table>";
+    }else{
+        echo "Il n'y a pas de projection pour cette date";
     }
-    $bdd = null;
+    $req->closeCursor();
+}
 
-    ?>
-</body>
-
-</html>
+include("includes/deconnexion.php");
+include("includes/pagepied.php");
+?>
