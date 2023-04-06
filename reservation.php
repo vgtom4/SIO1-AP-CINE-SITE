@@ -66,11 +66,7 @@ include("includes/pageentete.php");
                     echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
                     echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
                     echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
-                    echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' value='".bin2hex(openssl_random_pseudo_bytes(3))."' required></br>";
-                    echo "<input type='checkbox' name='check' required>J'accepte de me faire voler mes données.</br>";
-                    echo "<input type='checkbox' name='check' required>J'accepte de me faire frapper par l'État.</br>";
-                    echo "<a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>Conditions d'utilisation</a></br>";
-                    echo "<a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>Politique de confidentialité</a></br>";
+                    echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' value='".substr(bin2hex(openssl_random_pseudo_bytes(4)), 0, -2)."' required></br>";
                     echo "<input type='submit' name='btnvalider' value='Reserver'>";
                 echo "</form>";
             }else{

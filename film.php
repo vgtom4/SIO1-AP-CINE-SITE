@@ -14,20 +14,31 @@ include("includes/pageentete.php");
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
-        // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
         $uneligne = $req->fetch();
 
         if ($uneligne){
+            // Recherche des genres du film
+            $requete2 = ("select libgenre from genre natural join concerner where nofilm=$_POST[nofilm]");
+            // Préparation de la requête en utilisant la variable préparée auparavant
+            $req2 = $bdd->prepare($requete2);
+            $req2->execute();
+            $genres = "";
+            while ($uneligne2 = $req2->fetch()){
+                $genres.=$uneligne2["libgenre"].", ";
+            }
+            if($genres) $genres = substr($genres, 0, -2);
+
             echo "<table cellpadding='5'>";
                 echo "<tr>";
                 echo "<td rowspan='7'><img src='assets/media/affiches/$uneligne[imgaffiche]' width=200px></td>";
                 echo "<td>$uneligne[titre]</td>";
                 echo "</tr>";
                 echo "<tr><td>Durée : ".str_replace(":","h",date('G:i', strtotime($uneligne["duree"])))."</td></tr>";
-                echo "<tr><td>$uneligne[realisateurs]</td></tr>";
-                echo "<tr><td>$uneligne[acteurs]</td></tr>";
-                echo "<tr><td>$uneligne[infofilm]</td></tr>";
-                echo "<tr><td>$uneligne[libpublic]</td></tr>";
+                echo "<tr><td>Réalisateur(s) : $uneligne[realisateurs]</td></tr>";
+                echo "<tr><td>Acteur(s) : $uneligne[acteurs]</td></tr>";
+                if ($uneligne["infofilm"]) echo "<tr><td>Informations : $uneligne[infofilm]</td></tr>";
+                echo "<tr><td>Type de public : $uneligne[libpublic]</td></tr>";
+                echo "<tr><td>Genre(s) : $genres</td></tr>";
                 echo "<tr><td colspan='2'>$uneligne[synopsis]</td></tr>";
             echo "</table>";
         }else{
@@ -73,11 +84,6 @@ include("includes/pageentete.php");
     
         while ($uneligne!=null)
         {
-            $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
-            $req2 = $bdd->prepare($requete2);
-            $req2->execute();
-            $uneligne2 = $req2->fetch();
-            
             if ($dateDeProj!=$uneligne["dateproj"]){
                 echo "</table>";
                 $dateDeProj = $uneligne["dateproj"];
@@ -99,6 +105,11 @@ include("includes/pageentete.php");
             echo $uneligne["infoproj"];
             echo "</td>";
             echo "<td>";
+
+            $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
+            $req2 = $bdd->prepare($requete2);
+            $req2->execute();
+            $uneligne2 = $req2->fetch();
             if ($uneligne2["nbplacerestante"]>0){
                 echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]";
                 echo "<td><form method='post' action='reservation.php'>";

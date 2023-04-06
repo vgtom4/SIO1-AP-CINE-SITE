@@ -11,9 +11,15 @@ if (isset($_POST["btnajouter"])) {
 }
 
 if(isset($_POST["btnsupprimer"])==true) {
-$req4="delete from projection where noproj=$_POST[noproj]";
-$requete4=$bdd->prepare($req4);
-$requete4->execute();
+    $requete4="delete from reservation where noproj=$_POST[noproj]";
+    echo $requete4;
+    $req4=$bdd->prepare($requete4);
+    $req4->execute();
+
+    $requete4="delete from projection where noproj=$_POST[noproj]";
+    echo $requete4;
+    $req4=$bdd->prepare($requete4);
+    $req4->execute();
 }
 ?>
 
@@ -77,31 +83,20 @@ $requete4->execute();
 
         <?php 
         if (!$erreur){?>
-            <?php "<h1>Séances</h1>" ?>
+            <h1>Séances</h1>
             
             <?php
-            if(isset($_POST["nofilm"])) {
-                //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-                $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
-            }
+            //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
+            if(isset($_POST["nofilm"])) $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
+            
             // Préparation de la requête en utilisant la variable préparée auparavant
             $req = $bdd->prepare($requete);
             $req->execute();
             // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
             $uneligne = $req->fetch();
 
-            if ($uneligne){
-                $dateDeProj = $uneligne["dateproj"];
-                $date = date('l j F Y', strtotime($uneligne["dateproj"]));
-                echo "Projections du $date :";
-                echo "<table cellpadding='5'>";
-                echo "<tr>";
-                    echo "<th>Horaire</th>";
-                    echo "<th>Informations séance</th>";
-                    echo "<th>Places disponibles</th>";
-                echo "</tr>";
-            }
-        
+            $dateDeProj = null;
+            
             while ($uneligne)
             {
                 $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
@@ -118,35 +113,24 @@ $requete4->execute();
                     echo "<tr>";
                         echo "<th>Horaire</th>";
                         echo "<th>Informations séance</th>";
-                        echo "<th>Places disponibles</th>";
                     echo "</tr>";
                 }?>
                 
                 <tr>
-
-                <td>
-                <?php echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"]))) ?>
-                </td>
-
+                    <td>
+                        <?php echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"]))) ?>
+                    </td>
                 <td>
                 <?php echo $uneligne["infoproj"]?>
                 </td>
-
                 <td>
-                <?php
-                if ($uneligne2["nbplacerestante"]>0){
-                    echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]";
-                    echo "<td><form method='post' action='addreservation.php'>";
-                    echo "<input type='hidden' name='noproj' value='$uneligne[noproj]'>";
-                    echo "<input type='hidden' name='nofilm' value='$_POST[nofilm]'>";
-
-                    echo "<button type='submit' name='btnsupprimer'>Supprimer cette séance</button>";
-                    echo "</form></td>";                
-                }else{
-                    echo ("Aucune place disponible");
-                }
-                ?>
-                </td>
+                    <td>
+                        <form method='post' action='addreservation.php'>
+                            <input type='hidden' name='noproj' value='<?php echo $uneligne["noproj"] ?>'>
+                            <input type='hidden' name='nofilm' value='<?php echo $_POST["nofilm"] ?>'>
+                            <button type='submit' name='btnsupprimer'>Supprimer cette séance</button>
+                        </form></td>
+                    </td>
                 </tr>
 
                 <?php $uneligne = $req->fetch(); }?>
@@ -158,10 +142,9 @@ $requete4->execute();
 
             Informations sur la projection : <input type='text' name='txtInfo' value='<?php isset($_POST["txtInfo"]) ? $_POST["txtInfo"] : '' ?>' />
             </br>
-
             </br>
             <label for="salle-select">Salle :</label>
-            <select name="cbosalle">
+            <select name="cbosalle" required>
                 <option value="" selected>Sélectionner une salle</option>
 
                 <?php
@@ -171,8 +154,7 @@ $requete4->execute();
                 while ($uneligne)
                 {
                     // Affichage des numéros de salle dans la liste déroulante en sélectionnant la valeur précédemment sélectionnée
-                    echo ("<option value=$uneligne[nosalle] ". isset($_POST["cbosalle"])==true && $_POST["cbosalle"]==$uneligne["nosalle"] ? "selected" : "" .">$uneligne[nosalle]</option>");
-
+                    echo ("<option value=$uneligne[nosalle]>$uneligne[nosalle]</option>");
                     $uneligne = $req->fetch();
                 }
                 $req->closeCursor();
@@ -181,9 +163,9 @@ $requete4->execute();
             </select>
             </br>
 
-            Date : <input type='date' name='date' value='<?php isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' required/><br />
-            Heure : <input type='time' name='time' value='<?php isset($_POST["time"]) ? $_POST["date"] : date("H:i") ?>' required/><br />
-            <input type='hidden' name='nofilm' value='<?php $_POST["nofilm"] ?>'>
+            Date : <input type='date' name='date' value='<?php echo isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' required/><br />
+            Heure : <input type='time' name='time' value='<?php echo isset($_POST["time"]) ? $_POST["time"] : date("H:i") ?>' required/><br />
+            <input type='hidden' name='nofilm' value='<?php echo $_POST["nofilm"] ?>'>
             <input type='submit' name='btnajouter' value='Ajouter'>
         </form>
     </div>

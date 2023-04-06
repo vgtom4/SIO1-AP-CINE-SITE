@@ -40,8 +40,8 @@ include("includes/pageentete.php");
         </select>
         <label for="genre-select">Genre :</label>
         <select name="cbogenres[]" multiple>
+            
             <?php
-
             $req = $bdd->prepare("select * from genre");
             $req->execute();
             $uneligne = $req->fetch();
