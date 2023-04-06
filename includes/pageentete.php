@@ -1,4 +1,10 @@
-<?php session_start(); ?> 
+<?php session_start(); 
+if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'protected') {
+  $pageAdmin=true;
+}else{
+  $pageAdmin=false;
+}
+?> 
 <!doctype html>
 <html lang="fr">
   <head>
@@ -8,7 +14,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="assets/media/logo.png">
+    <link rel="icon" href="<?php echo $pageAdmin ? "../../assets/media/logo.png" : "assets/media/logo.png" ?>">
     <title><?php echo isset($_POST["titre"]) ? urldecode($_POST["titre"]) : pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) ?></title>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -25,27 +31,34 @@
   </head>
   <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-  <a class="navbar-brand" href="home.php"><img src="assets/media/logo.png" width="100"/></a>
+  <a class="navbar-brand" href="home.php"><img src="<?php echo $pageAdmin ? "../../assets/media/logo.png" : "assets/media/logo.png" ?>" width="100"/></a>
 
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
 
-      <li class="nav-item active">
-        <a class="nav-link" href="home.php">Accueil</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="projection.php">Projections</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="film.php">Debug Film</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="reservation.php">Debug Reservation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="backoffice/restricted/protected.php">Gestion ADMIN</a>
-      </li>
+    <?php
+    if ($pageAdmin) {
+      echo "<li class='nav-item active'>";
+        echo "<a class='nav-link' href='protected.php'>Accueil ADMIN</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='addreservation.php'>Debug gestion reservation</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='../../home.php'>Accueil Client</a></li>";
+    }else{
+      echo "<li class='nav-item active'>";
+        echo "<a class='nav-link' href='home.php'>Accueil</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='projection.php'>Projections</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='film.php'>Debug Film</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='reservation.php'>Debug Reservation</a></li>";
+      echo "<li class='nav-item'>";
+        echo "<a class='nav-link' href='backoffice/restricted/protected.php'>Gestion ADMIN</a></li>";
+    }?>
+
+
     </ul>
   </div>
 </nav>

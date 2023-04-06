@@ -1,3 +1,22 @@
+<?php 
+include("../../includes/connexion.php");
+include("../../includes/pageentete.php");
+
+if (isset($_POST["btnajouter"])) {
+    if ($_POST["cbosalle"] != ""){
+        $requete3="insert into projection values (null,'$_POST[date]','$_POST[time]','$_POST[txtInfo]',$_POST[nofilm],'$_POST[cbosalle]')";
+        $req3=$bdd->prepare($requete3);
+        $req3->execute();
+    }
+}
+
+if(isset($_POST["btnsupprimer"])==true) {
+$req4="delete from projection where noproj=$_POST[noproj]";
+$requete4=$bdd->prepare($req4);
+$requete4->execute();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,16 +32,12 @@
 </head>
 
 <body>
-    <a href="../../home.php">Retour page utilisateur</a></br>
-    <a href="protected.php">Home admin</a></br>
-    <a href="addreservation.php">Debug Gestion projection</a>
 
     <div name='info-film'>
         </br>
         <?php 
         if (isset($_POST["nofilm"])){
             $erreur = false;
-            $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
             //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
             $requete = ("select * from film natural join public where nofilm=$_POST[nofilm]");
@@ -54,16 +69,17 @@
         }else{
             echo "Erreur : problème de film sélectionné";
             $erreur = true;
-        }
-        ?>
+        }?>
     </div>
+
     <div name='seance-film'>
         </br>
-        <?php 
-        if (!$erreur){
-            echo "<h1>Séances</h1>";
-            
 
+        <?php 
+        if (!$erreur){?>
+            <?php "<h1>Séances</h1>" ?>
+            
+            <?php
             if(isset($_POST["nofilm"])) {
                 //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
                 $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
@@ -74,7 +90,7 @@
             // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
             $uneligne = $req->fetch();
 
-            if ($uneligne!=null){
+            if ($uneligne){
                 $dateDeProj = $uneligne["dateproj"];
                 $date = date('l j F Y', strtotime($uneligne["dateproj"]));
                 echo "Projections du $date :";
@@ -86,7 +102,7 @@
                 echo "</tr>";
             }
         
-            while ($uneligne!=null)
+            while ($uneligne)
             {
                 $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
                 $req2 = $bdd->prepare($requete2);
@@ -104,16 +120,20 @@
                         echo "<th>Informations séance</th>";
                         echo "<th>Places disponibles</th>";
                     echo "</tr>";
-                }
+                }?>
                 
-                echo "<tr>";
-                echo "<td>";
-                echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])));
-                echo "</td>";
-                echo "<td>";
-                echo $uneligne["infoproj"];
-                echo "</td>";
-                echo "<td>";
+                <tr>
+
+                <td>
+                <?php echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"]))) ?>
+                </td>
+
+                <td>
+                <?php echo $uneligne["infoproj"]?>
+                </td>
+
+                <td>
+                <?php
                 if ($uneligne2["nbplacerestante"]>0){
                     echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]";
                     echo "<td><form method='post' action='addreservation.php'>";
@@ -125,76 +145,53 @@
                 }else{
                     echo ("Aucune place disponible");
                 }
-                echo "</td>";
-                echo "</tr>";
-                
-                $uneligne = $req->fetch();
-            }
-            echo "</table>";
-            $req->closeCursor();
-            // test
-                
-        }
-        ?>
+                ?>
+                </td>
+                </tr>
+
+                <?php $uneligne = $req->fetch(); }?>
+            </table>
+            <?php $req->closeCursor(); } ?>
+
         <form method='post'>
             <h1>Ajouter des séances</h1>
 
-            Informations sur la projection : <input type='text' name='txtInfo'
-                value='<?php isset($_POST["txtInfo"]) ? $_POST["txtInfo"] : '' ?>' />
+            Informations sur la projection : <input type='text' name='txtInfo' value='<?php isset($_POST["txtInfo"]) ? $_POST["txtInfo"] : '' ?>' />
             </br>
 
             </br>
             <label for="salle-select">Salle :</label>
             <select name="cbosalle">
                 <option value="" selected>Sélectionner une salle</option>
-                <?php
-                $bdd = new PDO("mysql:host=localhost;dbname=bdcinevieillard-lepers;charset=utf8", "root", "");
 
+                <?php
                 $req = $bdd->prepare("select * from salle");
                 $req->execute();
                 $uneligne = $req->fetch();
-                while ($uneligne!=null)
+                while ($uneligne)
                 {
-                    if (isset($_POST["cbosalle"])==true && $_POST["cbosalle"]==$uneligne["nosalle"]){
-                        echo ("<option value=$uneligne[nosalle] selected>$uneligne[nosalle]</option>");
-                    }
-                    else 
-                    {
-                        echo ("<option value=$uneligne[nosalle]>$uneligne[nosalle]</option>");
-                    }
-                    $uneligne = $req->fetch();
+                    // Affichage des numéros de salle dans la liste déroulante en sélectionnant la valeur précédemment sélectionnée
+                    echo ("<option value=$uneligne[nosalle] ". isset($_POST["cbosalle"])==true && $_POST["cbosalle"]==$uneligne["nosalle"] ? "selected" : "" .">$uneligne[nosalle]</option>");
 
+                    $uneligne = $req->fetch();
                 }
-                
                 $req->closeCursor();
-             ?>
+                ?>
+
             </select>
             </br>
 
-            <?php 
-            echo "Date : <input type='date' name='date' value='".(isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d"))."'/><br />";
-            echo "Heure : <input type='time' name='time' value='".(isset($_POST["time"]) ? $_POST["date"] : date("H:i")) . "' /><br />";
-
-         echo "<input type='hidden' name='nofilm' value='$_POST[nofilm]'>";
-         echo "<input type='submit' name='btnvalider' value='Rechercher'>";
-
-         if (isset($_POST["btnvalider"]) == true) {
-            $requete3="insert into projection values (null,'$_POST[date]','$_POST[time]','$_POST[txtInfo]',$_POST[nofilm],'$_POST[cbosalle]')";
-            $req3=$bdd->prepare($requete3);
-            $req3->execute();
-         }
-
-         if(isset($_POST["btnsupprimer"])==true) {
-            $req4="delete from projection where noproj=$_POST[noproj]";
-            echo $req4;
-            $requete4=$bdd->prepare($req4);
-            $requete4->execute();
-        }
-
-        ?>
+            Date : <input type='date' name='date' value='<?php isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' required/><br />
+            Heure : <input type='time' name='time' value='<?php isset($_POST["time"]) ? $_POST["date"] : date("H:i") ?>' required/><br />
+            <input type='hidden' name='nofilm' value='<?php $_POST["nofilm"] ?>'>
+            <input type='submit' name='btnajouter' value='Ajouter'>
+        </form>
     </div>
-
-    </form>
+    
 </body>
 
 </html>
+
+<?php
+include("../../includes/deconnexion.php");
+?>

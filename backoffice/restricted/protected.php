@@ -1,3 +1,8 @@
+<?php 
+include("../../includes/connexion.php");
+include("../../includes/pageentete.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,9 +18,6 @@
 </head>
 
 <body>
-    <a href="../../home.php">Retour page utilisateur</a></br>
-    <a href="protected.php">Home admin</a></br>
-    <a href="addreservation.php">Debug gestion projection</a>
 
     <div class="search-bar">
         <form method="POST" action="protected.php">
