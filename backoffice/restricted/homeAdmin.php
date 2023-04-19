@@ -3,20 +3,6 @@ include("../../includes/connexion.php");
 include("../../includes/pageentete.php");
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../../assets/media/logo.png">
-    <link rel="stylesheet" href="../../assets/style/style.css">
-    <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
-
-    <title>Accueil ADMIN</title>
-</head>
-
 <body>
 
     <div class="search-bar">
@@ -124,7 +110,7 @@ include("../../includes/pageentete.php");
         echo "<tr><td>$uneligne[realisateurs]</td></tr>";
         echo "<tr><td>$uneligne[acteurs]</td></tr>";
         echo "</table>";
-        echo "<form id='form_$uneligne[nofilm]' method='post' action='addreservation.php'>";
+        echo "<form id='form_$uneligne[nofilm]' method='post' action='gestionProjection.php'>";
         echo "<input type='hidden' name='nofilm' value='$uneligne[nofilm]'>";
         echo "<input type='hidden' name='titre' value='".urlencode($uneligne["titre"])."'>";
         echo "</form>";
@@ -136,6 +122,7 @@ include("../../includes/pageentete.php");
     $bdd=null;
 
 ?>
-</body>
-
-</html>
+<?php 
+include("../../includes/deconnexion.php"); 
+include("../../includes/pagepied.php");
+?>

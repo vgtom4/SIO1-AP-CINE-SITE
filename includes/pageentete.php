@@ -1,9 +1,12 @@
-<?php session_start(); 
-if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'protected') {
+<?php session_start();
+
+// Vérifie si la page est appelée depuis le backoffice ou le frontoffice
+if (dirname($_SERVER['PHP_SELF']) == "/".basename(dirname(__DIR__)).'/backoffice/restricted') {
   $pageAdmin=true;
 }else{
   $pageAdmin=false;
 }
+
 ?> 
 <!doctype html>
 <html lang="fr">
@@ -22,7 +25,7 @@ if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pat
     <link href="bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
 	<!-- Custom styles for this template -->
     
-    <link rel="stylesheet" href="assets/style/style.css">
+    <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../assets/style/style.css" : "assets/style/style.css" ?>">
     <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
 	<!-- Bootstrap core JavaScript -->
     <!-- If placed at the end of the document, the pages load faster -->
@@ -30,9 +33,9 @@ if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pat
     <script src="bootstrap/js/bootstrap.min.js"></script>
   </head>
   <body>
+
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
   <a class="navbar-brand" href="home.php"><img src="<?php echo $pageAdmin ? "../../assets/media/logo.png" : "assets/media/logo.png" ?>" width="100"/></a>
-
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -40,9 +43,9 @@ if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pat
     <?php
     if ($pageAdmin) {
       echo "<li class='nav-item active'>";
-        echo "<a class='nav-link' href='protected.php'>Accueil ADMIN</a></li>";
+        echo "<a class='nav-link' href='homeAdmin.php'>Accueil ADMIN</a></li>";
       echo "<li class='nav-item'>";
-        echo "<a class='nav-link' href='addreservation.php'>Debug gestion reservation</a></li>";
+        echo "<a class='nav-link' href='gestionProjection.php'>Debug gestion projection</a></li>";
       echo "<li class='nav-item'>";
         echo "<a class='nav-link' href='../../home.php'>Accueil Client</a></li>";
     }else{
@@ -55,7 +58,7 @@ if (pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) == 'addreservation' or pat
       echo "<li class='nav-item'>";
         echo "<a class='nav-link' href='reservation.php'>Debug Reservation</a></li>";
       echo "<li class='nav-item'>";
-        echo "<a class='nav-link' href='backoffice/restricted/protected.php'>Gestion ADMIN</a></li>";
+        echo "<a class='nav-link' href='backoffice/restricted/homeAdmin.php'>Gestion ADMIN</a></li>";
     }?>
 
 
