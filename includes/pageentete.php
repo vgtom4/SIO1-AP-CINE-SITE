@@ -1,7 +1,7 @@
 <?php session_start();
 
 // Vérifie si la page est appelée depuis le backoffice ou le frontoffice
-if (dirname($_SERVER['PHP_SELF']) == "/".basename(dirname(__DIR__)).'/backoffice/restricted') {
+if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) {
   $pageAdmin=true;
 }else{
   $pageAdmin=false;
