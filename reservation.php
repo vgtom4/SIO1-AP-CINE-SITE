@@ -45,9 +45,10 @@ include("includes/pageentete.php");
     <?php
     if(isset($_POST["btnvalider"])) {
         // Requête sql pour insérer la réservation
-        $requete3 = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_POST[txtpwd]', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
-        $req3 = $bdd->prepare($requete3);
-        $req3->execute();
+        $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_POST[txtpwd]', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
+        $req = $bdd->prepare($requete);
+        $req->execute();
+        $req->closeCursor();
         $reservation=true;
     }else{
         $reservation=false;
@@ -55,16 +56,16 @@ include("includes/pageentete.php");
     
     if ($reservation==false){
         if (isset($_POST["noproj"]) && $erreur == false){
-            $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
-            $req2 = $bdd->prepare($requete2);
-            $req2->execute();
-            $uneligne2 = $req2->fetch();
+            $requete = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
+            $req = $bdd->prepare($requete2);
+            $req->execute();
+            $uneligne = $req->fetch();
             
-            if ($uneligne2["nbplacerestante"]>0){
+            if ($uneligne["nbplacerestante"]>0){
                 echo "<form method='POST' action='reservation.php'>";
                     echo "<input type='hidden' name='noproj' value='$_POST[noproj]'>";
-                    echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne2[nbplacerestante]' value='1' required>";
-                    echo "(place(s) disponible(s) : $uneligne2[nbplacerestante] / $uneligne2[nbplaces])</br>";
+                    echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne[nbplacerestante]' value='1' required>";
+                    echo "(place(s) disponible(s) : $uneligne[nbplacerestante] / $uneligne[nbplaces])</br>";
                     echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
                     echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' value='".substr(bin2hex(openssl_random_pseudo_bytes(4)), 0, -2)."' required></br>";
                     echo "<input type='submit' name='btnvalider' value='Reserver'>";
@@ -74,16 +75,18 @@ include("includes/pageentete.php");
                 echo ("<h1>Aucune place disponible.</h1>");
                 echo ("<img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>");
             }
+            $req->closeCursor();
         }
     }else{
         echo "<h2>Réservation effectuée</h2>";
         echo "Client : $_POST[txtpseudo]";
         echo "</br>Nombre de place réservée : $_POST[nbplaceresa]</br>";
 
-        $requete4 = ("select max(noresa) as noresa from reservation");
-        $req4 = $bdd->prepare($requete4);
-        $req4->execute();
-        $noResa = $req4->fetchColumn();
+        $requete = ("select max(noresa) as noresa from reservation");
+        $req = $bdd->prepare($requete);
+        $req->execute();
+        $noResa = $req->fetchColumn();
+        $req->closeCursor();
 
         // Inclure la bibliothèque PHP QR Code
         include("assets/utils/phpqrcode/qrlib.php");
@@ -115,7 +118,6 @@ include("includes/pageentete.php");
         $reservation=false;
     }
     ?>
-
 </div>
 
 <?php

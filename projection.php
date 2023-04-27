@@ -3,7 +3,6 @@ include("includes/connexion.php");
 include("includes/pageentete.php");
 ?>
 
-
 <form method='POST' action='projection.php'>
     Date : <input type='date' name='date' value='<?php echo isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' onchange='form.submit()'/><br />
 </form>

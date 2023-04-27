@@ -34,9 +34,9 @@ include("includes/pageentete.php");
                 $uneligne = $req->fetch();
 
             }
-            
             $req->closeCursor();
             ?>
+
         </select>
         <label for="genre-select">Genre :</label>
         <select name="cbogenres[]" multiple>
@@ -49,11 +49,10 @@ include("includes/pageentete.php");
             {
                 echo ("<option value='$uneligne[nogenre]'>$uneligne[libgenre]</option>");
                 $uneligne = $req->fetch();
-
             }
-            
             $req->closeCursor();
             ?>
+
         </select>
         <input type="submit" name="btnvalider" value="Rechercher">
     </form>
@@ -64,8 +63,7 @@ $titre = isset($_POST["txttitre"]) ? addslashes($_POST['txttitre']) : "";
 $acteurs = isset($_POST["txtact"]) ? addslashes($_POST['txtact']) : "";
 $realisateurs = isset($_POST["txtreal"]) ? addslashes($_POST['txtreal']) : "";
 
-$requete = ("select distinct film.* from film natural join concerner where titre like\"%$titre%\" and acteurs like\"%$acteurs%\"
-                            and realisateurs like\"%$realisateurs%\" ");
+$requete = ("select distinct film.* from film natural join concerner where titre like \"%$titre%\" and acteurs like \"%$acteurs%\" and realisateurs like\"%$realisateurs%\" ");
 //Si un public est renseigné, ajoute la recherche du public à la requête
 if(isset($_POST["cbopublic"]) == true && $_POST["cbopublic"] != "") {
     $requete.= (" and nopublic='$_POST[cbopublic]' ");
