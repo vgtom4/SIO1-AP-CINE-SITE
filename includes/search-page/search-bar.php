@@ -62,4 +62,8 @@
         </select>
         <input type="submit" name="btnvalider" value="Rechercher">
     </form>
+    <!-- Bouton pour réinitialiser les champs du formulaire -->
+    <form method="POST">
+        <input type="submit" name="btnreset" value="X">
+    </form>
 </div>
