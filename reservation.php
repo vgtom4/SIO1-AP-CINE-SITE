@@ -28,7 +28,7 @@ include("includes/pageentete.php");
                 </tr>
                 <tr><td>Horaire : <?php echo date('G\hi', strtotime($uneligne["heureproj"]))?></td></tr>
                 <tr><td>Salle <?php echo $uneligne["nosalle"]?></td></tr>
-                <tr><td><?php echo $uneligne["infoproj"]?></td></tr>
+                <tr><td>Informations : <?php echo $uneligne["infoproj"]?></td></tr>
             </table>
         <?php }else{ ?>
             <h1>Erreur : projection inconnue</h1>
@@ -100,6 +100,7 @@ include("includes/pageentete.php");
             
             // Si le nombre de place restante est supérieur à 0, afficher le formulaire de réservation
             if ($uneligne["nbplacerestante"]>0){?>
+                </br><h2>Formulaire de réservation</h2>
                 <!-- Formulaire de réservation -->
                 <form method='POST' action='reservation.php'>
                     <input type='hidden' name='noproj' value='<?php echo $_POST["noproj"]?>'>
