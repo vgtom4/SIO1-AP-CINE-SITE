@@ -64,9 +64,15 @@ if(isset($_POST["delete_projection"])) {
     <?php
     // Si des réservations existent, affichage d'un message (pop-up) de confirmation
     if ($nbPlacesResa > 0) {
+        $noproj = $_POST["noproj"];
+        $titre = urldecode($_POST["titre"]);
+        $dateproj = $_POST["dateproj"];
+        $heureproj = $_POST["heureproj"];
+        $nosalle = $_POST["nosalle"];
+        $infoproj = urldecode($_POST["infoproj"]);
         ?>
         <script>
-            if(confirm("Des réservations ont été faites pour cette séance.\nÊtes-vous sûr de vouloir la supprimer ?")) {
+            if(confirm("Des réservations ont été faites pour la séance suivante :\nProjection : <?php echo $noproj ?>\nTitre : <?php echo $titre ?>\nDate : <?php echo $dateproj ?>\nHoraire : <?php echo $heureproj ?>\nSalle : <?php echo $nosalle ?>\nInformations projection : <?php echo $infoproj ?>\nNombre de réservation : <?php echo $nbPlacesResa ?>\nÊtes-vous sûr de vouloir la supprimer ?")) {
                 document.getElementById("delete_form_confirm_<?php echo $_POST["noproj"] ?>").submit();
             }
         </script>
@@ -147,6 +153,11 @@ include("../../includes/info-film.php");
                         <form id="delete_form_<?php echo $uneligne["noproj"] ?>" method='post'>
                             <input type='hidden' name='noproj' value='<?php echo $uneligne["noproj"] ?>'>
                             <input type='hidden' name='nofilm' value='<?php echo $_POST["nofilm"] ?>'>
+                            <input type='hidden' name='titre' value='<?php echo urlencode($titre) ?>'>
+                            <input type='hidden' name='dateproj' value='<?php echo $uneligne["dateproj"] ?>'>
+                            <input type='hidden' name='heureproj' value='<?php echo $uneligne["heureproj"] ?>'>
+                            <input type='hidden' name='infoproj' value='<?php echo urlencode($uneligne["infoproj"]) ?>'>
+                            <input type='hidden' name='nosalle' value='<?php echo $uneligne["nosalle"] ?>'>
                             <input type='hidden' name='delete_projection' value='true'>
                         </form>
                     </td>

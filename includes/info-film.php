@@ -23,6 +23,8 @@
                 $genres.=$uneligne2["libgenre"].", ";
             }
             if($genres) $genres = substr($genres, 0, -2);
+
+            $titre = $uneligne["titre"];
             ?>
 
             <!-- Affichage des informations du film -->
