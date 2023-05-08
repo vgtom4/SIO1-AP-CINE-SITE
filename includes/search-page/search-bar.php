@@ -64,6 +64,6 @@
     </form>
     <!-- Bouton pour réinitialiser les champs du formulaire -->
     <form method="POST">
-        <input type="submit" name="btnreset" value="X">
+        <input type="submit" name="btnreset" title="Réinitialiser la recherche" value="X">
     </form>
 </div>
