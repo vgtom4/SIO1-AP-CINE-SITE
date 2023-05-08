@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
 <div class="search-bar">
     <!-- Affichage du formulaire de recherche -->
     <form method="POST">
@@ -35,7 +36,7 @@
 
         <!-- Input pour le genre -->
         <label for="genre-select">Genre :</label>
-        <select name="cbogenres[]" multiple>
+        <select id="cbogenres" name="cbogenres[]" multiple>
             <?php
             // Requête pour récupérer les genres
             $req = $bdd->prepare("select * from genre");
@@ -67,3 +68,7 @@
         <input type="submit" name="btnreset" title="Réinitialiser la recherche" value="X">
     </form>
 </div>
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+<script>
+    new MultiSelectTag('cbogenres')  // id
+</script>
