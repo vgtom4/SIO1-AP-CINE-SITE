@@ -4,14 +4,53 @@ include("includes/connexion.php");
 include("includes/pageentete.php");
 ?>
 
-<!-- Affichage de l'input date pour sélectionner une date de projection -->
-<form method='POST' action='projection.php'>
-    Sélectionnez une date de projection : <input type='date' name='date' value='<?php echo isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' onchange='form.submit()'/><br />
+<!-- Gestion de la date -->
+<?php
+// Vérifie si la date a été sélectionnée par l'utilisateur
+// Si oui, on récupère la date sélectionnée
+// Si non, on récupère la date du jour
+if (isset($_POST["date"]) && strtotime($_POST["date"])) {
+    $date = $_POST["date"];
+    // Vérifie si l'utilisateur a cliqué sur le bouton "previous"
+    // Si oui, on récupère la date précédent la date sélectionnée dans la base de données
+    if (isset($_POST["btnprevious"])) {
+        $requete = ("select distinct MAX(dateproj) from projection where dateproj < '$date'");
+        $req = $bdd->prepare($requete);
+        $req->execute();
+        $date = $req->fetchColumn();
+    } else 
+    // Vérifie si l'utilisateur a cliqué sur le bouton "next"
+    // Si oui, on récupère la date suivant la date sélectionnée dans la base de données
+    if (isset($_POST["btnnext"])) {
+        $requete = ("select distinct MIN(dateproj) from projection where dateproj > '$date'");
+        $req = $bdd->prepare($requete);
+        $req->execute();
+        $date = $req->fetchColumn();
+    }
+    // On vérifie si la date est nulle
+    // Si oui, cela signifie que l'utilisateur a cliqué sur le bouton "previous" ou "next" et qu'il n'y a pas de date précédente ou suivante
+    if ($date == null) $date = $_POST["date"];
+} else {
+    // Si l'utilisateur a saisi une date, on l'enregistre dans la variable $date, sinon on met la date du jour
+    $date = date("Y-m-d"); 
+}
+?>
+
+Sélectionnez une date de projection : 
+<!-- Bouton "previous" et "next" -->
+<form method="post">
+    <input type="hidden" name="date" value="<?php echo $date; ?>">
+    <input type="submit" name="btnprevious" value="previous">
+    <input type='date' name='date' value='<?php echo $date ?>' onchange='form.submit()'/>
+    <input type="submit" name="btnnext" value="next">
 </form>
+<?php
+
+// Affichage de la date sélectionnée
+$dateproj = date('l j F Y', strtotime($date));?>
+<br><h2>Projections du <?php echo $dateproj ?>:</h2>
 
 <?php
-// Si l'utilisateur a saisi une date, on l'enregistre dans la variable $date, sinon on met la date du jour
-if (isset($_POST["date"])) { $date = $_POST["date"]; } else { $date = date("Y-m-d" ); }
 
 // Recherche des projections dans la base de données en fonction de la date sélectionnée
 $requete = ("select distinct * from projection natural join film where dateproj ='$date' order by heureproj, nosalle");
