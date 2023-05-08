@@ -45,42 +45,62 @@ include("includes/pageentete.php");
 <div class="reservation-form">
     <?php if (!$erreur){
         if(isset($_POST["btnvalider"])) {
-            // Définir les informations de réservation
-            $datetime_reservation = date("Y-m-d H:i:s");
-            $num_projection = $_POST["noproj"];
-            $date_projection = $uneligne["dateproj"];
-            $horaire_projection = $uneligne["heureproj"];
-            $salle_projection = $uneligne["nosalle"];
-            $titre_film = $uneligne["titre"];
-            $pseudo_client = $_POST["txtpseudo"];
-            $motdepasse = bin2hex(random_bytes(3));
-            $nbplaceresa = $_POST["nbplaceresa"];
-            
-            // Ajout de la réservation dans la base de données
-            $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$motdepasse', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
-            $req = $bdd->prepare($requete);
-            $req->execute();
-            $req->closeCursor();
+            if(!isset($_POST["confirmResa"])){
+                // Définir les informations de réservation
+                $datetime_reservation = date("Y-m-d H:i:s");
+                $num_projection = $_POST["noproj"];
+                $date_projection = $uneligne["dateproj"];
+                $horaire_projection = $uneligne["heureproj"];
+                $salle_projection = $uneligne["nosalle"];
+                $titre_film = $uneligne["titre"];
+                $pseudo_client = $_POST["txtpseudo"];
+                $motdepasse = bin2hex(random_bytes(3));
+                $nbplaceresa = $_POST["nbplaceresa"];
+                
+                // Ajout de la réservation dans la base de données
+                $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$motdepasse', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
+                $req = $bdd->prepare($requete);
+                $req->execute();
+                $req->closeCursor();
 
-            // Récupération du numéro de réservation
-            $lastNoResa = $bdd->lastInsertId();
-            $num_reservation = $lastNoResa;?>
+                // Récupération du numéro de réservation
+                $lastNoResa = $bdd->lastInsertId();
+                $num_reservation = $lastNoResa;
+
+                // Inclure la bibliothèque PHP QR Code
+                include("assets/utils/phpqrcode/qrlib.php");
+
+                // Concaténation des informations de réservations
+                $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
+                
+                // Génération du qrcode
+                QRcode::png($code_texte, "assets/media/qrcode/qrcode.png");?>
+
+                <!-- Formulaire cacher de confirmation de réservation pour contrer l'actualisation (réexecution de l'insertion en cas d'actualisation) -->
+                <form method="post" id="reservation_form_confirm_<?php echo $num_reservation ?>">
+                    <input type="hidden" name="noproj" value="<?php echo $num_projection ?>">
+                    <input type="hidden" name="noresa" value="<?php echo $num_reservation ?>">
+                    <input type="hidden" name="txtpseudo" value="<?php echo urlencode($pseudo_client) ?>">
+                    <input type="hidden" name="mdp" value="<?php echo $motdepasse ?>">
+                    <input type="hidden" name="nbplaceresa" value="<?php echo $nbplaceresa ?>">
+                    <input type="hidden" name="confirmResa" value="true">
+                    <input type="hidden" name="btnvalider" value="true">
+                </form>
+                <script>document.getElementById("reservation_form_confirm_<?php echo $num_reservation ?>").submit();</script>
+
+            <?php }else{
+
+            // Récupération des informations de réservation
+            $num_reservation = $_POST["noresa"];
+            $pseudo_client = $_POST["txtpseudo"];
+            $motdepasse = $_POST["mdp"];
+            $nbplaceresa = $_POST["nbplaceresa"];?>
 
             <!-- Affichage des informations de réservation -->
             <h2>Réservation effectuée</h2>
             Client : <?php echo $pseudo_client?>
             </br>Mot de passe : <?php echo $motdepasse?> <i>(Attention, vous en aurez besoin pour valider votre passage en caisse avec le QRCode!)</i>
             </br>Nombre de place réservée : <?php echo $nbplaceresa?></br>
-
-            <?php
-            // Inclure la bibliothèque PHP QR Code
-            include("assets/utils/phpqrcode/qrlib.php");
-
-            // Concaténation des informations de réservations
-            $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
-            
-            // Génération du qrcode
-            QRcode::png($code_texte, "assets/media/qrcode/qrcode.png");?>
 
             </br><h3>Voici votre QR code de réservation</h3>
 
@@ -91,7 +111,8 @@ include("includes/pageentete.php");
             </br><a href='assets/media/qrcode/qrcode.png' download='Reservation<?php echo $num_reservation?>.png'>Télécharger votre QR code</a>
             
             </br></br><a href='home.php'>Retour à l'accueil</a>
-        <?php }else{
+            <?php }
+        }else{
             // Recherche du nombre de place restante pour la projection sélectionnée
             $requete = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
             $req = $bdd->prepare($requete);
