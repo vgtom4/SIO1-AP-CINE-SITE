@@ -1,134 +1,90 @@
 <?php
+// Connexion à la base de données et inclusion de l'entête
 include("includes/connexion.php");
 include("includes/pageentete.php");
+
+// Affichage des informations du film
+include("includes/info-film.php");
 ?>
 
-<div name='info-film'>
-    </br>
-    <?php 
-    if (isset($_POST["nofilm"])){
-        $erreur = false;
-
-        //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-        $requete = ("select * from film natural join public where nofilm=$_POST[nofilm]");
-        // Préparation de la requête en utilisant la variable préparée auparavant
-        $req = $bdd->prepare($requete);
-        $req->execute();
-        $uneligne = $req->fetch();
-
-        if ($uneligne){
-            // Recherche des genres du film
-            $requete2 = ("select libgenre from genre natural join concerner where nofilm=$_POST[nofilm]");
-            // Préparation de la requête en utilisant la variable préparée auparavant
-            $req2 = $bdd->prepare($requete2);
-            $req2->execute();
-            $genres = "";
-            while ($uneligne2 = $req2->fetch()){
-                $genres.=$uneligne2["libgenre"].", ";
-            }
-            if($genres) $genres = substr($genres, 0, -2);
-
-            echo "<table cellpadding='5'>";
-                echo "<tr>";
-                echo "<td rowspan='7'><img src='assets/media/affiches/$uneligne[imgaffiche]' width=200px></td>";
-                echo "<td>$uneligne[titre]</td>";
-                echo "</tr>";
-                echo "<tr><td>Durée : ".str_replace(":","h",date('G:i', strtotime($uneligne["duree"])))."</td></tr>";
-                echo "<tr><td>Réalisateur(s) : $uneligne[realisateurs]</td></tr>";
-                echo "<tr><td>Acteur(s) : $uneligne[acteurs]</td></tr>";
-                if ($uneligne["infofilm"]) echo "<tr><td>Informations : $uneligne[infofilm]</td></tr>";
-                echo "<tr><td>Type de public : $uneligne[libpublic]</td></tr>";
-                echo "<tr><td>Genre(s) : $genres</td></tr>";
-                echo "<tr><td colspan='2'>$uneligne[synopsis]</td></tr>";
-            echo "</table>";
-        }else{
-            echo "Erreur : film inconnu";
-            $erreur = true;
-        }
-
-        $req->closeCursor();
-    }else{
-        echo "Erreur : problème de film sélectionné";
-        $erreur = true;
-    }
-    ?>
-</div>
+<!-- Affichage des séances du film -->
 <div name='seance-film'>
     </br>
     <?php 
-    if (!$erreur){
-        echo "<h1>Séances</h1>";
+    // Si aucune erreur n'est survenue, on affiche les séances du film
+    if (!$erreur){?>
+        <h1>Séances</h1>
         
-
-        if(isset($_POST["nofilm"])) {
-            //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-            $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj");
-        }
-        // Préparation de la requête en utilisant la variable préparée auparavant
+        <?php
+        // Recherche des séances du film dans la base de données
+        $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj, nosalle");
         $req = $bdd->prepare($requete);
         $req->execute();
-        // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
         $uneligne = $req->fetch();
 
-        if ($uneligne!=null){
-            $dateDeProj = $uneligne["dateproj"];
-            $date = date('l j F Y', strtotime($uneligne["dateproj"]));
-            echo "Projections du $date :";
-            echo "<table cellpadding='5'>";
-            echo "<tr>";
-                echo "<th>Horaire</th>";
-                echo "<th>Informations séance</th>";
-                echo "<th>Places disponibles</th>";
-            echo "</tr>";
-        }
-    
-        while ($uneligne!=null)
-        {
-            if ($dateDeProj!=$uneligne["dateproj"]){
-                echo "</table>";
-                $dateDeProj = $uneligne["dateproj"];
-                $date = date('l j F Y', strtotime($uneligne["dateproj"]));
-                echo "<br/>Projections du $date :";
-                echo "<table cellpadding='5'>";
-                echo "<tr>";
-                    echo "<th>Horaire</th>";
-                    echo "<th>Informations séance</th>";
-                    echo "<th>Places disponibles</th>";
-                echo "</tr>";
-            }
-            
-            echo "<tr>";
-            echo "<td>";
-            echo str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])));
-            echo "</td>";
-            echo "<td>";
-            echo $uneligne["infoproj"];
-            echo "</td>";
-            echo "<td>";
+        // Si des séances sont prévues pour le film, on les affiche
+        // Sinon, on affiche un message indiquant qu'aucune séance n'est prévue
+        if ($uneligne) {
+            $dateDeProj = null;
+            // Affichage des séances
+            while($uneligne)
+            {
+                // Si la date de la projection est différente de la date de la projection précédente, 
+                // on ferme la table et on en ouvre une nouvelle.
+                if ($dateDeProj!=$uneligne["dateproj"]){
+                    $dateDeProj = $uneligne["dateproj"];
+                    $date = date('l j F Y', strtotime($uneligne["dateproj"]));?>
+                    </table>
 
-            $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
-            $req2 = $bdd->prepare($requete2);
-            $req2->execute();
-            $uneligne2 = $req2->fetch();
-            if ($uneligne2["nbplacerestante"]>0){
-                echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]";
-                echo "<td><form method='post' action='reservation.php'>";
-                echo "<input type='hidden' name='noproj' value='$uneligne[noproj]'>";
-                echo "<button type='submit'>Réserver pour cette séance</button>";
-                echo "</form></td>";                
-            }else{
-                echo ("Aucune place disponible");
-            }
-            echo "</td>";
-            echo "</tr>";
-            
-            $uneligne = $req->fetch();
-        }
-        echo "</table>";
-        $req->closeCursor();
+                    <br><h4>Projections du <?php echo $date ?>:</h4>
+                    <table cellpadding=10>
+                        <tr>
+                            <th>Horaire</th>
+                            <th>Informations séance</th>
+                            <th>Places disponibles</th>
+                        </tr>
+                <?php } ?>
+                
+                <tr>
+                    <!-- Affichage des informations de la séance -->
+                    <td><?php echo date('G\hi', strtotime($uneligne["heureproj"]))?></td>
+                    <td><?php echo $uneligne["infoproj"]?></td>
+                    <td>
+                        <?php
+                        // Recherche du nombre de places restantes pour la projection
+                        $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
+                        $req2 = $bdd->prepare($requete2);
+                        $req2->execute();
+                        $uneligne2 = $req2->fetch();
+                        // Si des places sont disponibles, on affiche un bouton pour réserver
+                        // Sinon, on affiche un message indiquant qu'il n'y a plus de places disponibles
+                        if ($uneligne2["nbplacerestante"]>0){ 
+                            echo "$uneligne2[nbplacerestante] sur $uneligne2[nbplaces]" ?>
+                            <td>
+                                <!-- Formulaire pour réserver une place -->
+                                <form method='post' action='reservation.php'>
+                                    <input type='hidden' name='noproj' value='<?php echo $uneligne["noproj"] ?>'>
+                                    <button type='submit'>Réserver pour cette séance</button>
+                                </form>
+                            </td>       
+                        <?php }else{ ?>
+                            Aucune place disponible
+                        <?php } ?>
+                    </td>
+                </tr>
+                <?php $req2->closeCursor(); 
+                $uneligne = $req->fetch();
+            }?>
+            </table>
+            <?php $req->closeCursor();
+        }else{ ?>
+            <h4>Aucune séance n'est prévue pour ce film</h4>
+        <?php }
     }
     ?>
 </div>
+
+<?php if ($erreur) echo ("</br></br><a href='home.php'>Retour à l'accueil</a>") ?>
 
 <?php
 include("includes/deconnexion.php");

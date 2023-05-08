@@ -1,10 +1,12 @@
 <?php
+// Connexion à la base de données et inclusion de l'entête
 include("includes/connexion.php");
 include("includes/pageentete.php");
 ?>
 
 <div class="reservation-info">
     <?php
+    // Vérification que la projection a bien été sélectionnée
     if (isset($_POST["noproj"])){
         $erreur = false;
 
@@ -13,106 +15,111 @@ include("includes/pageentete.php");
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
         $req->execute();
-        // Recherche pour chaque film de la base de données si ses caractéristiques correspondent à celles recherchées
         $uneligne = $req->fetch();
 
+        // Affichage des informations de la projection
         if ($uneligne){
-            echo "<h1>Réservation pour le film : $uneligne[titre]</h1>";
-            echo "<table cellpadding='5'>";
-                echo "<tr>";
-                echo "<td rowspan='7'><img src='assets/media/affiches/$uneligne[imgaffiche]' width=100px></td>";
-                $date = date('l j F Y', strtotime($uneligne["dateproj"]));
-                echo "<td>Date : $date</td>";
-                echo "</tr>";
-                echo "<tr><td>Horaire : ".str_replace(":","h",date('G:i', strtotime($uneligne["heureproj"])))."</td></tr>";
-                echo "<tr><td>Salle $uneligne[nosalle]</td></tr>";
-                echo "<tr><td>$uneligne[infoproj]</td></tr>";
-            echo "</table>";
-        }else{
-            echo "Erreur : projection inconnue";
-            $erreur = true;
+            $date = date('l j F Y', strtotime($uneligne["dateproj"])) ?>
+            <h1>Réservation pour le film : <?php echo $uneligne["titre"]?></h1>
+            <table cellpadding='5'>
+                <tr>
+                    <td rowspan='7'><img src='assets/media/affiches/<?php echo $uneligne["imgaffiche"]?>' width=100px></td>
+                    <td>Date : <?php echo $date?></td>
+                </tr>
+                <tr><td>Horaire : <?php echo date('G\hi', strtotime($uneligne["heureproj"]))?></td></tr>
+                <tr><td>Salle <?php echo $uneligne["nosalle"]?></td></tr>
+                <tr><td><?php echo $uneligne["infoproj"]?></td></tr>
+            </table>
+        <?php }else{ ?>
+            <h1>Erreur : projection inconnue</h1>
+            <?php $erreur = true;
         }
-
         $req->closeCursor();
-    }else{
-        echo "</br>Erreur : problème de projection sélectionnée";
-        $erreur = true;
-    }
-    ?>
+    }else{?>
+        <h1>Erreur : problème de projection sélectionnée</h1>
+        <?php $erreur = true;
+    }?>
 </div>
 
+<!-- Affichage du formulaire de réservation -->
 <div class="reservation-form">
-    <?php
-    if(isset($_POST["btnvalider"])) {
-        // Requête sql pour insérer la réservation
-        $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$_POST[txtpwd]', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
-        $req = $bdd->prepare($requete);
-        $req->execute();
-        $req->closeCursor();
-        
-        echo "<h2>Réservation effectuée</h2>";
-        echo "Client : $_POST[txtpseudo]";
-        echo "</br>Nombre de place réservée : $_POST[nbplaceresa]</br>";
+    <?php if (!$erreur){
+        if(isset($_POST["btnvalider"])) {
+            // Définir les informations de réservation
+            $datetime_reservation = date("Y-m-d H:i:s");
+            $num_projection = $_POST["noproj"];
+            $date_projection = $uneligne["dateproj"];
+            $horaire_projection = $uneligne["heureproj"];
+            $salle_projection = $uneligne["nosalle"];
+            $titre_film = $uneligne["titre"];
+            $pseudo_client = $_POST["txtpseudo"];
+            $motdepasse = bin2hex(random_bytes(3));
+            $nbplaceresa = $_POST["nbplaceresa"];
+            
+            // Ajout de la réservation dans la base de données
+            $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$motdepasse', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
+            $req = $bdd->prepare($requete);
+            $req->execute();
+            $req->closeCursor();
 
-        $requete = ("select max(noresa) as noresa from reservation");
-        $req = $bdd->prepare($requete);
-        $req->execute();
-        $noResa = $req->fetchColumn();
-        $req->closeCursor();
+            // Récupération du numéro de réservation
+            $lastNoResa = $bdd->lastInsertId();
+            $num_reservation = $lastNoResa;?>
 
-        // Inclure la bibliothèque PHP QR Code
-        include("assets/utils/phpqrcode/qrlib.php");
+            <!-- Affichage des informations de réservation -->
+            <h2>Réservation effectuée</h2>
+            Client : <?php echo $pseudo_client?>
+            </br>Mot de passe : <?php echo $motdepasse?> <i>(Attention, vous en aurez besoin pour valider votre passage en caisse avec le QRCode!)</i>
+            </br>Nombre de place réservée : <?php echo $nbplaceresa?></br>
 
-        // Définir les informations de réservation
-        $num_reservation = $noResa;
-        $datetime_reservation = date("Y-m-d H:i:s");
-        $num_projection = $_POST["noproj"];
-        $date_projection = $uneligne["dateproj"];
-        $horaire_projection = $uneligne["heureproj"];
-        $salle_projection = $uneligne["nosalle"];
-        $titre_film = $uneligne["titre"];
-        $pseudo_client = $_POST["txtpseudo"];
-        $nbplaceresa = $_POST["nbplaceresa"];
+            <?php
+            // Inclure la bibliothèque PHP QR Code
+            include("assets/utils/phpqrcode/qrlib.php");
 
-        // Concaténer les informations en une seule chaîne de caractères
-        $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
-        
-        QRcode::png($code_texte, "assets/media/qrcode/qrcode.png");
+            // Concaténation des informations de réservations
+            $code_texte = "$num_reservation;$datetime_reservation;$num_projection;$date_projection;$horaire_projection;$titre_film;$salle_projection;$pseudo_client;$nbplaceresa";
+            
+            // Génération du qrcode
+            QRcode::png($code_texte, "assets/media/qrcode/qrcode.png");?>
 
-        echo "<h3>Voici votre QR code de réservation</h3>";
-        // Afficher le QR code sur votre page PHP
-        echo "<img src='assets/media/qrcode/qrcode.png' alt='QR code'>";
+            </br><h3>Voici votre QR code de réservation</h3>
 
-        // Ajouter un bouton de téléchargement pour le QR code
-        echo "</br><a href='assets/media/qrcode/qrcode.png' download='Reservation$num_reservation.png'>Télécharger le QR code</a>";
-        
-        echo "</br></br><a href='home.php'>Retour à l'accueil</a>";
-    }else{
-        if (isset($_POST["noproj"]) && $erreur == false){
+            <!-- Afficher le QR code sur votre page PHP -->
+            <img src='assets/media/qrcode/qrcode.png' alt='QR code'>
+
+            <!-- Ajouter un bouton de téléchargement pour le QR code -->
+            </br><a href='assets/media/qrcode/qrcode.png' download='Reservation<?php echo $num_reservation?>.png'>Télécharger votre QR code</a>
+            
+            </br></br><a href='home.php'>Retour à l'accueil</a>
+        <?php }else{
+            // Recherche du nombre de place restante pour la projection sélectionnée
             $requete = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
             $req = $bdd->prepare($requete);
             $req->execute();
             $uneligne = $req->fetch();
             
-            if ($uneligne["nbplacerestante"]>0){
-                echo "<form method='POST' action='reservation.php'>";
-                    echo "<input type='hidden' name='noproj' value='$_POST[noproj]'>";
-                    echo "Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='$uneligne[nbplacerestante]' value='1' required>";
-                    echo "(place(s) disponible(s) : $uneligne[nbplacerestante] / $uneligne[nbplaces])</br>";
-                    echo "Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>";
-                    echo "Mot de passe : <input type='password' name='txtpwd' placeholder='Saisir mot de passe' value='".substr(bin2hex(openssl_random_pseudo_bytes(4)), 0, -2)."' required></br>";
-                    echo "<input type='submit' name='btnvalider' value='Reserver'>";
-                echo "</form>";
-            }else{
-                echo ("<h1>Séance complète.</h1>");
-                echo ("<h1>Aucune place disponible.</h1>");
-                echo ("<img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>");
-            }
+            // Si le nombre de place restante est supérieur à 0, afficher le formulaire de réservation
+            if ($uneligne["nbplacerestante"]>0){?>
+                <!-- Formulaire de réservation -->
+                <form method='POST' action='reservation.php'>
+                    <input type='hidden' name='noproj' value='<?php echo $_POST["noproj"]?>'>
+                    Indiquez le nombre de place à réserver : <input type='number' name='nbplaceresa' min='1' max='<?php echo $uneligne["nbplacerestante"]?>' value='1' required>
+                    (place(s) disponible(s) : <?php echo $uneligne["nbplacerestante"]?> / <?php echo $uneligne["nbplaces"]?>)</br>
+                    Pseudo :<input type='text' name='txtpseudo' placeholder='Saisir pseudo' required></br>
+                    <input type='submit' name='btnvalider' value='Réserver'>
+                </form>
+            <?php }else{ ?>
+                <h1>Séance complète.</h1>
+                <h1>Aucune place disponible.</h1>
+                <img src='https://media.giphy.com/media/xX0rXi3iWNd0qpWsXq/giphy.gif'>
+            <?php }
             $req->closeCursor();
         }
     }
     ?>
 </div>
+
+<?php if ($erreur) echo ("</br></br><a href='home.php'>Retour à l'accueil</a>") ?>
 
 <?php
 include("includes/deconnexion.php");
