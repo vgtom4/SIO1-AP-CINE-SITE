@@ -40,9 +40,9 @@ Sélectionnez une date de projection :
 <!-- Bouton "previous" et "next" -->
 <form method="post">
     <input type="hidden" name="date" value="<?php echo $date; ?>">
-    <input type="submit" name="btnprevious" value="previous">
+    <input type="submit" name="btnprevious" value="Projections précédentes">
     <input type='date' name='date' value='<?php echo $date ?>' onchange='form.submit()'/>
-    <input type="submit" name="btnnext" value="next">
+    <input type="submit" name="btnnext" value="Projections suivantes">
 </form>
 <?php
 
