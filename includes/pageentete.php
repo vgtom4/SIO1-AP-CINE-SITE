@@ -14,25 +14,25 @@ if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) { $pageAdmi
   <meta name="author" content="">
 
   <!-- Affichage de l'icone d'onglet -->
-  <link rel="icon" href="<?php echo $pageAdmin ? "../../assets/media/logo.png" : "assets/media/logo.png" ?>">
+  <link rel="icon" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/media/logo.png">
 
   <!-- Affichage du nom de l'onglet -->
-  <title><?php echo isset($_POST["titre"]) ? "Pathé Ciné - ".urldecode($_POST["titre"]) : "Pathé Ciné - ".pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) ?></title>
+  <title>Pathé Ciné - <?php echo isset($_POST["titre"]) ? urldecode($_POST["titre"]) : pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) ?></title>
 
   <!-- Importation des feuilles de style -->
-  <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../assets/style/style.css" : "assets/style/style.css" ?>">
+  <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/style.css">
   <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
   
   <!-- Importation de bootstrap -->
-  <link href="<?php echo $pageAdmin ? "../../bootstrap/css/bootstrap.min.css" : "bootstrap/css/bootstrap.min.css" ?>" rel="stylesheet">
-  <link href="<?php echo $pageAdmin ? "../../bootstrap/css/bootstrap-theme.min.css" : "bootstrap/css/bootstrap-theme.min.css" ?>" rel="stylesheet">
-  <script src="<?php echo $pageAdmin ? "../../bootstrap/jquery/jquery-3.3.1.min.js" : "bootstrap/jquery/jquery-3.3.1.min.js" ?>"></script>
-  <script src="<?php echo $pageAdmin ? "../../bootstrap/js/bootstrap.min.js" : "bootstrap/js/bootstrap.min.js" ?>"></script>
+  <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/jquery/jquery-3.3.1.min.js"></script>
+  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body style="background-color: #1d1d1d;" class="text-light">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <!-- Affichage du logo dans la barre de navigation -->
-    <a class="navbar-brand" href="<?php echo $pageAdmin ? "homeAdmin.php" : "home.php" ?>"><img src="<?php echo $pageAdmin ? "../../assets/media/logo.png" : "assets/media/logo.png" ?>" width="100"/></a>
+    <a class="navbar-brand" href="<?php echo $pageAdmin ? "homeAdmin.php" : "home.php" ?>"><img src="<?php echo $pageAdmin ? "../../" : "" ?>assets/media/logo.png" width="100"/></a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
