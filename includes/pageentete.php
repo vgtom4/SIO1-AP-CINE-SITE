@@ -20,6 +20,8 @@ if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) { $pageAdmi
   <title>Pathé Ciné - <?php echo isset($_POST["titre"]) ? urldecode($_POST["titre"]) : pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) ?></title>
 
   <!-- Importation des feuilles de style -->
+  
+  <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/multi-select-tag.css">
   <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/style.css">
   <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
   

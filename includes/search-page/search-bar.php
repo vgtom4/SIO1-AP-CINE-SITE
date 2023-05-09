@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
 <div class="search-bar">
     <!-- Affichage du formulaire de recherche -->
     <form method="POST">
@@ -68,7 +67,7 @@
         <input type="submit" name="btnreset" title="Réinitialiser la recherche" value="X">
     </form>
 </div>
-<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+<script src="<?php echo $pageAdmin ? "../../" : "" ?>assets/js/multi-select-tag.js"></script>
 <script>
     new MultiSelectTag('cbogenres')  // id
 </script>
