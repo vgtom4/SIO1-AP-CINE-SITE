@@ -53,8 +53,9 @@ $dateproj = date('l j F Y', strtotime($date));?>
 <?php
 
 // Recherche des projections dans la base de données en fonction de la date sélectionnée
-$requete = ("select distinct * from projection natural join film where dateproj ='$date' order by heureproj, nosalle");
+$requete = ("select distinct * from projection natural join film where dateproj =:date order by heureproj, nosalle");
 $req = $bdd->prepare($requete);
+$req->bindParam(':date', $date, PDO::PARAM_STR);
 $req->execute();
 $uneligne = $req->fetch();
 
@@ -91,8 +92,9 @@ if ($uneligne) {
             <tr><td>
                 <?php
                 // Recherche du nombre de places restantes pour la projection
-                $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
+                $requete2 = ("select (select nbplaces from salle natural join projection where noproj=:noproj) - COALESCE((select sum(nbplacesresa) from reservation where noproj=:noproj),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=:noproj");
                 $req2 = $bdd->prepare($requete2);
+                $req2->bindParam(':noproj', $uneligne["noproj"], PDO::PARAM_INT);
                 $req2->execute();
                 $uneligne2 = $req2->fetch();
 

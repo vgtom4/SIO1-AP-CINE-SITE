@@ -11,9 +11,9 @@ include("includes/pageentete.php");
         $erreur = false;
 
         //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-        $requete = ("select * from projection natural join film natural join salle where noproj=$_POST[noproj]");
-        // Préparation de la requête en utilisant la variable préparée auparavant
+        $requete = ("select * from projection natural join film natural join salle where noproj=:noproj");
         $req = $bdd->prepare($requete);
+        $req->bindParam(':noproj', $_POST["noproj"], PDO::PARAM_INT);
         $req->execute();
         $uneligne = $req->fetch();
 
@@ -57,9 +57,13 @@ include("includes/pageentete.php");
                 $motdepasse = bin2hex(random_bytes(3));
                 $nbplaceresa = $_POST["nbplaceresa"];
                 
-                // Ajout de la réservation dans la base de données
-                $requete = ("insert into reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) values ('$motdepasse', now(), '$_POST[txtpseudo]', '$_POST[nbplaceresa]', '$_POST[noproj]')");
+                // Insertion de la réservation dans la base de données
+                $requete = "INSERT INTO reservation (mdpresa, dateresa, nomclient, nbplacesresa, noproj) VALUES (:motdepasse, NOW(), :nomclient, :nbplacesresa, :noproj)";
                 $req = $bdd->prepare($requete);
+                $req->bindParam(':motdepasse', $motdepasse, PDO::PARAM_STR);
+                $req->bindParam(':nomclient', $_POST['txtpseudo'], PDO::PARAM_STR);
+                $req->bindParam(':nbplacesresa', $_POST['nbplaceresa'], PDO::PARAM_INT);
+                $req->bindParam(':noproj', $_POST['noproj'], PDO::PARAM_INT);
                 $req->execute();
                 $req->closeCursor();
 
@@ -114,8 +118,9 @@ include("includes/pageentete.php");
             <?php }
         }else{
             // Recherche du nombre de place restante pour la projection sélectionnée
-            $requete = ("select (select nbplaces from salle natural join projection where noproj=$_POST[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$_POST[noproj]");
+            $requete = ("select (select nbplaces from salle natural join projection where noproj=:noproj) - COALESCE((select sum(nbplacesresa) from reservation where noproj=:noproj),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=:noproj");
             $req = $bdd->prepare($requete);
+            $req->bindParam(':noproj', $_POST["noproj"], PDO::PARAM_INT);
             $req->execute();
             $uneligne = $req->fetch();
             

@@ -8,26 +8,31 @@ if (isset($_POST["btnajouter"])) {
         // Vérifier si la salle est déjà occupée à la date et l'heure de la projection à ajouter
         $requete =  "SELECT EXISTS(".
                     "SELECT noproj FROM projection ".
-                    "WHERE dateproj = '$_POST[date]' ".
-                    "AND nosalle = '$_POST[cbosalle]' ".
+                    "WHERE dateproj = :date ".
+                    "AND nosalle = :cbosalle ".
                     "AND CAST(heureproj as time) ".
                     "BETWEEN TIMEDIFF(".
-                        "'$_POST[time]', ".
+                        ":time, ".
                         "ADDTIME(".
                             "'00:05:00',".
                             "(SELECT duree FROM film natural join projection ".
-                            "WHERE dateproj = '$_POST[date]' ".
-                            "AND nosalle = '$_POST[cbosalle]' ".
+                            "WHERE dateproj = :date ".
+                            "AND nosalle = :cbosalle ".
                             "AND heureproj = (".
                                 "SELECT MAX(heureproj) FROM projection ".
-                                "WHERE dateproj = '$_POST[date]' ".
-                                "AND nosalle = '$_POST[cbosalle]' ".
-                                "AND heureproj <= '$_POST[time]')))) ".
-                    "AND ADDTIME('$_POST[time]', ".
+                                "WHERE dateproj = :date ".
+                                "AND nosalle = :cbosalle ".
+                                "AND heureproj <= :time)))) ".
+                    "AND ADDTIME(:time, ".
                         "ADDTIME('00:05:00',".
-                            "(SELECT duree FROM film WHERE nofilm = $_POST[nofilm])))) AS filmBlocked";
+                            "(SELECT duree FROM film WHERE nofilm = :nofilm)))) AS filmBlocked";
 
         $req = $bdd->prepare($requete);
+        // bindParam permet de lier une variable PHP à un paramètre SQL
+        $req->bindParam(':date', $_POST["date"], PDO::PARAM_STR);
+        $req->bindParam(':cbosalle', $_POST["cbosalle"], PDO::PARAM_STR);
+        $req->bindParam(':time', $_POST["time"], PDO::PARAM_STR);
+        $req->bindParam(':nofilm', $_POST["nofilm"], PDO::PARAM_INT);
         $req->execute();
         $salle_occupee = (bool) $req->fetchColumn();
 
@@ -37,8 +42,14 @@ if (isset($_POST["btnajouter"])) {
         <?php
         } else {
             // Ajout de la projection à la base de données
-            $requete="insert into projection values (null,'$_POST[date]','$_POST[time]','$_POST[txtInfo]',$_POST[nofilm],'$_POST[cbosalle]')";
+            $requete="insert into projection values (null,:date,:time,:infoproj,:nofilm,:cbosalle)";
             $req=$bdd->prepare($requete);
+            // bindParam permet de lier une variable PHP à un paramètre SQL
+            $req->bindParam(':date', $_POST["date"], PDO::PARAM_STR);
+            $req->bindParam(':time', $_POST["time"], PDO::PARAM_STR);
+            $req->bindParam(':infoproj', $_POST["txtInfo"], PDO::PARAM_STR);
+            $req->bindParam(':nofilm', $_POST["nofilm"], PDO::PARAM_INT);
+            $req->bindParam(':cbosalle', $_POST["cbosalle"], PDO::PARAM_STR);
             $req->execute();
         }
         $req->closeCursor();
@@ -48,8 +59,9 @@ if (isset($_POST["btnajouter"])) {
 // Permet de supprimer une projection de la base de données après vérification de la présence de réservations
 if(isset($_POST["delete_projection"])) {
     // Vérifier si des réservations existent pour la projection à supprimer
-    $requete = "select sum(nbplacesresa) from reservation where noproj=$_POST[noproj]";
+    $requete = "select sum(nbplacesresa) from reservation where noproj=:noproj";
     $req = $bdd->prepare($requete);
+    $req->bindParam(':noproj', $_POST["noproj"], PDO::PARAM_INT);
     $req->execute();
     $nbPlacesResa = $req->fetchColumn();
     ?>
@@ -87,12 +99,14 @@ if(isset($_POST["delete_projection"])) {
 // Suppression de la projection et de ses réservations associées
 if(isset($_POST["delete_confirm"])) {
     // Supprimer la projection et ses réservations associées
-    $requete = "DELETE FROM reservation WHERE noproj = $_POST[noproj]";
+    $requete = "DELETE FROM reservation WHERE noproj = :noproj";
     $req = $bdd->prepare($requete);
+    $req->bindParam(':noproj', $_POST["noproj"], PDO::PARAM_INT);
     $req->execute();
 
-    $requete = "DELETE FROM projection WHERE noproj = $_POST[noproj]";
+    $requete = "DELETE FROM projection WHERE noproj = :noproj";
     $req = $bdd->prepare($requete);
+    $req->bindParam(':noproj', $_POST["noproj"], PDO::PARAM_INT);
     $req->execute();
 }
 ?>
@@ -114,8 +128,9 @@ include("../../includes/info-film.php");
         
         <?php
         // Recherche des séances du film dans la base de données
-        $requete = ("select * from projection where nofilm=$_POST[nofilm] ORDER BY dateproj, heureproj, nosalle");
+        $requete = ("select * from projection where nofilm=:nofilm ORDER BY dateproj, heureproj, nosalle");
         $req = $bdd->prepare($requete);
+        $req->bindParam(':nofilm', $_POST["nofilm"], PDO::PARAM_INT);
         $req->execute();
         $uneligne = $req->fetch();
 

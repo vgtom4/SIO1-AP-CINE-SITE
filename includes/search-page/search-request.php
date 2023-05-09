@@ -5,9 +5,9 @@ $acteurs = isset($_POST["txtact"]) ? addslashes($_POST['txtact']) : "";
 $realisateurs = isset($_POST["txtreal"]) ? addslashes($_POST['txtreal']) : "";
 
 // Requête pour récupérer les films correspondant aux critères de recherche
-$requete = ("select distinct film.* from film natural join concerner where titre like '%$titre%' 
-                                                                        and acteurs like '%$acteurs%'
-                                                                        and realisateurs like '%$realisateurs%'");
+$requete = ("select distinct film.* from film natural join concerner where titre like :titre 
+                                                                        and acteurs like :acteurs
+                                                                        and realisateurs like :realisateurs");
 
 // Si un public est renseigné, ajout du paramètre "public" à la requête
 if(isset($_POST["cbopublic"]) == true && $_POST["cbopublic"] != "") {
@@ -26,6 +26,9 @@ if(isset($_POST["cbogenres"]) == true && $_POST["cbogenres"] != "") {
 
 // Execution de la requête
 $req = $bdd->prepare($requete);
+$req->bindValue(':titre', "%".$titre."%", PDO::PARAM_STR);
+$req->bindValue(':acteurs', "%".$acteurs."%", PDO::PARAM_STR);
+$req->bindValue(':realisateurs', "%".$realisateurs."%", PDO::PARAM_STR);
 $req->execute();
 $uneligne = $req->fetch();
 ?>

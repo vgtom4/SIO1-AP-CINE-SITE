@@ -6,17 +6,19 @@
         $erreur = false;
 
         //Génération de la requête qui va chercher dans la DB les projections correspondant au film renseigné
-        $requete = ("select * from film natural join public where nofilm=$_POST[nofilm]");
+        $requete = ("select * from film natural join public where nofilm=:nofilm");
         // Préparation de la requête en utilisant la variable préparée auparavant
         $req = $bdd->prepare($requete);
+        $req->bindParam(':nofilm', $_POST["nofilm"], PDO::PARAM_INT);
         $req->execute();
         $uneligne = $req->fetch();
 
         if ($uneligne){
             // Recherche des genres du film
-            $requete2 = ("select libgenre from genre natural join concerner where nofilm=$_POST[nofilm]");
+            $requete2 = ("select libgenre from genre natural join concerner where nofilm=:nofilm");
             // Préparation de la requête en utilisant la variable préparée auparavant
             $req2 = $bdd->prepare($requete2);
+            $req2->bindParam(':nofilm', $_POST["nofilm"], PDO::PARAM_INT);
             $req2->execute();
             $genres = "";
             while ($uneligne2 = $req2->fetch()){

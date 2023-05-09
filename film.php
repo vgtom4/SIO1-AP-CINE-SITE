@@ -52,8 +52,11 @@ include("includes/info-film.php");
                     <td>
                         <?php
                         // Recherche du nombre de places restantes pour la projection
-                        $requete2 = ("select (select nbplaces from salle natural join projection where noproj=$uneligne[noproj]) - COALESCE((select sum(nbplacesresa) from reservation where noproj=$uneligne[noproj]),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=$uneligne[noproj]");
+                        $requete2 = "SELECT (SELECT nbplaces FROM salle NATURAL JOIN projection WHERE noproj=:noproj)
+                                    - COALESCE((SELECT SUM(nbplacesresa) FROM reservation WHERE noproj=:noproj), 0) AS nbplacerestante, 
+                                    nbplaces FROM salle NATURAL JOIN projection WHERE noproj=:noproj";
                         $req2 = $bdd->prepare($requete2);
+                        $req2->bindParam(':noproj', $uneligne['noproj'], PDO::PARAM_INT);
                         $req2->execute();
                         $uneligne2 = $req2->fetch();
                         // Si des places sont disponibles, on affiche un bouton pour réserver
