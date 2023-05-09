@@ -23,22 +23,19 @@ if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) { $pageAdmi
   
   <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/multi-select-tag.css">
   <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/style.css">
-  <link href="https://fonts.googleapis.com/css?family=Proxima+Nova:400,700&display=swap" rel="stylesheet">
-  
+
   <!-- Importation de bootstrap -->
-  <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
   <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/jquery/jquery-3.3.1.min.js"></script>
-  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/js/bootstrap.min.js"></script>
+  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/js/bootstrap.min.js"></script> -->
 </head>
 <body style="background-color: #1d1d1d;" class="text-light">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+  <nav class="navbar">
     <!-- Affichage du logo dans la barre de navigation -->
-    <a class="navbar-brand" href="<?php echo $pageAdmin ? "homeAdmin.php" : "home.php" ?>"><img src="<?php echo $pageAdmin ? "../../" : "" ?>assets/media/logo.png" width="100"/></a>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-
+    <a class="navbar-logo" href="<?php echo $pageAdmin ? "homeAdmin.php" : "home.php" ?>"><img src="<?php echo $pageAdmin ? "../../" : "" ?>assets/media/logo.png"/></a>
+    <div>
+      <ul>
       <?php
       // Récupération du nom de la page courante
       $currentPage = pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME);

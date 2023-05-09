@@ -66,7 +66,7 @@ if ($uneligne) {
     while ($uneligne) {
         if ($horaire != date('G\hi', strtotime($uneligne["heureproj"]))){
             $horaire = date('G\hi', strtotime($uneligne["heureproj"]));?>
-            </br></br><h3>Séance(s) de <?php echo $horaire?></h3></br>
+            </br><h3>Séance(s) de <?php echo $horaire?></h3></br>
         <?php } ?>
 
         <!-- Affichage des informations de la projection -->

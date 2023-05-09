@@ -35,36 +35,37 @@
 
         <!-- Input pour le genre -->
         <label for="genre-select">Genre :</label>
-        <select id="cbogenres" name="cbogenres[]" multiple>
-            <?php
-            // Requête pour récupérer les genres
-            $req = $bdd->prepare("select * from genre");
-            $req->execute();
-            $uneligne = $req->fetch();
-
-            // Boucle pour afficher les genres dans le select "cbogenres"
-            while ($uneligne)
-            {
-                if(isset($_POST["cbogenres"])){
-                    $selected = false;
-                    // Boucle pour vérifier si le genre a été sélectionné par l'utilisateur
-                    // Si oui, on le sélectionne
-                    for ($i=0;$i<count($_POST["cbogenres"]);$i++)  
-                    {
-                        if($_POST["cbogenres"][$i] == $uneligne["nogenre"]) $selected = true;
-                    }
-                }
-                echo ("<option value='$uneligne[nogenre]' ".($selected ? 'selected' : null).">$uneligne[libgenre]</option>");
+            <select id="cbogenres" name="cbogenres[]" multiple>
+                <?php
+                // Requête pour récupérer les genres
+                $req = $bdd->prepare("select * from genre");
+                $req->execute();
                 $uneligne = $req->fetch();
-            }
-            $req->closeCursor();
-            ?>
-        </select>
+
+                // Boucle pour afficher les genres dans le select "cbogenres"
+                while ($uneligne)
+                {
+                    if(isset($_POST["cbogenres"])){
+                        $selected = false;
+                        // Boucle pour vérifier si le genre a été sélectionné par l'utilisateur
+                        // Si oui, on le sélectionne
+                        for ($i=0;$i<count($_POST["cbogenres"]);$i++)  
+                        {
+                            if($_POST["cbogenres"][$i] == $uneligne["nogenre"]) $selected = true;
+                        }
+                    }
+                    echo ("<option value='$uneligne[nogenre]' ".($selected ? 'selected' : null).">$uneligne[libgenre]</option>");
+                    $uneligne = $req->fetch();
+                }
+                $req->closeCursor();
+                ?>
+            </select>
+        </label>
         <input type="submit" name="btnvalider" value="Rechercher">
     </form>
     <!-- Bouton pour réinitialiser les champs du formulaire -->
     <form method="POST">
-        <input type="submit" name="btnreset" title="Réinitialiser la recherche" value="X">
+        <input type="submit" name="btnreset" title="Réinitialiser la recherche" value="Réinitialiser la recherche">
     </form>
 </div>
 <script src="<?php echo $pageAdmin ? "../../" : "" ?>assets/js/multi-select-tag.js"></script>

@@ -1,75 +1,221 @@
-.search-bar {
+/* NavBar */
+* {
+    box-sizing: border-box;
+  }
+
+.navbar {
+    background-color: #292929;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    width: 12%;
-    max-width: 200px;
-    height: 100vh;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
     padding: 10px;
-    background-color: #1d1d1d;
-    border: 1px solid #ccc;
-    color: #fff;
-}
-
-.search-bar label {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    width: 100%;
-}
-
-.search-bar input[type="text"] {
-    padding: 3px;
-    margin-bottom: 5px;
-    font-size: 16px;
-    border: none;
-    border-bottom: 2px solid #d4af37;
-    outline: none;
-    background-color: transparent;
-    color: #fff;
-    width: 100%;
-    max-width: 180px;
-}
-
-.search-bar select {
-    padding: 6px;
-    margin-bottom: 10px;
-    font-size: 16px;
-    border: none;
-    border-bottom: 2px solid #d4af37;
-    outline: none;
-    background-color: transparent;
-    color: #444;
-    width: 100%;
-    max-width: 200px;
-}
-
-.search-bar input {
-    background-color: #d4af37;
-    color: #000;
     font-size: 16px;
     padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
 }
 
-.search-bar input:hover {
-    background-color: #c19a32;
+.navbar-logo img {
+    width: 50px; /* réduction de la largeur de l'image */
 }
 
-.search-bar input[type="submit"] {
-    margin: auto;
+.navbar > div {
+    flex-grow: 1;
+}
+
+.navbar ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+}
+
+.navbar li {
+    margin: 0 10px;
+}
+
+.navbar li a {
+    color: white;
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.2s ease-out;
+    font-size: 20px;
+    padding: 10px 15px; /* ajout de cette ligne pour augmenter la zone cliquable */
+}
+
+.navbar li a:hover {
+    color: #FDC300;
+}
+
+.navbar .active a {
+    font-weight: bold;
+    color: #FDC300;
+}
+
+/* Body */
+@font-face {
+    font-family: Heebo;
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/Heebo-Regular.woff2) format("woff2")
+}
+
+@font-face {
+    font-family: Heebo;
+    font-style: normal;
+    font-weight: 500;
+    src: url(fonts/Heebo-Medium.woff2) format("woff2")
+}
+
+@font-face {
+    font-family: Heebo;
+    font-style: normal;
+    font-weight: 700;
+    src: url(fonts/Heebo-Bold.woff2) format("woff2")
+}
+
+@font-face {
+    font-family: Heebo;
+    font-style: normal;
+    font-weight: 800;
+    src: url(fonts/Heebo-ExtraBold.woff2) format("woff2")
+}
+
+body {
+    margin-top: 100px;
+    padding: 0;
+    font-family: Heebo,arial,sans-serif;
+    font-size: 16px;
+    background-color: #17181C;
+    color: #fff;
+}
+
+
+
+/* Search-Bar */
+.search-bar {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: auto;
+    background-color: #17181b;
+    padding: 20px;
+    border-radius: 5px;
+  }
+   
+  .search-bar label {
     display: block;
-}
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+   
+  .search-bar input[type="text"],
+  .search-bar select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #FDC300;
+    font-weight: bold;
+  }
+   
+  .search-bar select {
+    width: 100%;
+    height: 35px;
+  }
 
-.search-bar input[type="submit"] span {
-    margin-left: 5px;
-}
+    .search-bar input[type="text"]:hover,
+    .search-bar input[type="submit"]:hover,
+    .search-bar select:hover 
+    {
+        background-color: #fdad00;
+        color: #17181C;
+    }     
 
-.search-bar input[type="submit"]:hover {
-    background-color: #fff;
-    color: #1d1d1d;
-}
+    .search-bar input[type="text"]::selection{
+        background-color: #17181C;
+        color: #fdad00;
+    }
+
+    .search-bar input[type="submit"] {
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 10px;
+        /* centrer l'élément dans le bandeau */
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        box-sizing: border-box;
+        background-color: #FDC300;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+
+
+/* Film Affiche */
+.liste-film {
+    margin-top: 50px;
+  }
+  
+  .films-grid {
+    display: grid;
+    padding-left: 450px;
+    padding-right: 50px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 30px;
+  }
+  
+  .film {
+    padding: 10px;
+    border-radius: 5px;
+    width: 250px;
+    background-color: #252628;
+  }
+  
+  .film:hover {
+    background-color: #fdad00;
+    cursor: pointer;
+  }
+  
+  .film img {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .film p {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+
+/* Barre de scrooling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #17181C;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #fdad00;
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #fdad00;
+  }
