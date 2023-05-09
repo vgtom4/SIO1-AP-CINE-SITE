@@ -277,6 +277,54 @@ body {
 }
 
 
+/* Info Film */
+.info-film {
+  margin-top: 50px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+.info-film img {
+  float: left;
+  width: 250px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+}
+
+.info-film i {
+  font-size: 15px;
+}
+
+.info-film .info {
+  font-size: 15px;
+}
+
+
+.seance-film {
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+.seance-film button {
+  color: #17181C;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #FDC300;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.seance-film button:hover {
+  background-color: #fdad00;
+  color: #17181C;
+}
+
+
+
 /* Barre de scrooling */
 ::-webkit-scrollbar {
     width: 10px;

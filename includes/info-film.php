@@ -1,4 +1,4 @@
-<div name='info-film'>
+<div class='info-film'>
     </br>
     <?php 
     // Vérification que le film a bien été sélectionné
@@ -30,19 +30,19 @@
             ?>
 
             <!-- Affichage des informations du film -->
-            <table cellpadding='5'>
-                <tr>
-                <td rowspan='7'><img src='<?php echo $pageAdmin ? "../../assets/media/affiches/".$uneligne["imgaffiche"] : "assets/media/affiches/".$uneligne["imgaffiche"] ?>' width=200px></td>
-                <td><h1><?php echo $uneligne["titre"]?></h1></td>
-                </tr>
-                <tr><td>Durée : <?php echo date('G\hi', strtotime($uneligne["duree"]))?></td></tr>
-                <tr><td>Réalisateur(s) : <?php echo $uneligne["realisateurs"]?></td></tr>
-                <tr><td>Acteur(s) : <?php echo $uneligne["acteurs"]?></td></tr>
-                <?php if ($uneligne["infofilm"]) {?><tr><td>Informations : <?php echo $uneligne["infofilm"]?></td></tr><?php }?>
-                <tr><td>Type de public : <?php echo $uneligne["libpublic"]?></td></tr>
-                <tr><td>Genre(s) : <?php echo $genres?></td></tr>
-                <tr><td colspan='2'></br><p class='font-weight-bold'>Synopsis :</p><?php echo $uneligne["synopsis"]?></td></tr>
-            </table>
+            <div class='info'>
+                <img src='<?php echo $pageAdmin ? "../../assets/media/affiches/".$uneligne["imgaffiche"] : "assets/media/affiches/".$uneligne["imgaffiche"] ?>' width=200px>
+                <h1><?php echo $uneligne["titre"]?></h1>
+                
+                <label><i>Durée : </i><?php echo date('G\hi', strtotime($uneligne["duree"]))?></label></br>
+                </br><label><i>Réalisateur(s) : </i><?php echo $uneligne["realisateurs"]?></label></br>
+                </br><label><i>Acteur(s) : </i><?php echo $uneligne["acteurs"]?></label></br>
+                <?php if ($uneligne["infofilm"]) {?></br><label><i>Informations : </i><?php echo $uneligne["infofilm"]?><?php }?></label></br>
+                </br><label><i>Type de public : </i><?php echo $uneligne["libpublic"]?></label></br>
+                </br><label><i>Genre(s) : </i><?php echo $genres?></label>
+            </div>
+            </br><label><p><i>Synopsis :</i></p><?php echo $uneligne["synopsis"]?></label>
+            
             <?php
         }else{?>
             Erreur : film inconnu

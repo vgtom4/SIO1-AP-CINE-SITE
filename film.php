@@ -8,7 +8,7 @@ include("includes/info-film.php");
 ?>
 
 <!-- Affichage des séances du film -->
-<div name='seance-film'>
+<div class='seance-film'>
     </br>
     <?php 
     // Si aucune erreur n'est survenue, on affiche les séances du film
