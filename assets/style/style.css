@@ -94,8 +94,6 @@ body {
     color: #fff;
 }
 
-
-
 /* Search-Bar */
 .search-bar {
     position: fixed;
@@ -163,15 +161,15 @@ body {
     }
 
 
-/* Film Affiche */
+/* Film */
 .liste-film {
     margin-top: 50px;
+    padding-left: 450px;
+    padding-right: 50px;
   }
   
   .films-grid {
     display: grid;
-    padding-left: 450px;
-    padding-right: 50px;
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 30px;
   }
@@ -199,6 +197,84 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
   }
+
+
+/* Search-Bar-projection */
+.search-bar-projection {
+  position: fixed;
+  width: 320px;
+  height: auto;
+  background-color: #17181b;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+ 
+.search-bar-projection label {
+  font-weight: bold;
+}
+ 
+.search-bar-projection input[type="date"] {
+  padding: 5px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #FDC300;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search-bar-projection input[type="submit"]:hover,
+.search-bar-projection input[type="date"]:hover
+{
+  background-color: #fdad00;
+  color: #17181C;
+}     
+
+.search-bar-projection input[type="submit"] {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  /* centrer l'élément dans le bandeau */
+  box-sizing: border-box;
+  background-color: #FDC300;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+
+/* Séance */
+.liste-seances {
+  margin-top: 50px;
+  padding-left: 450px;
+  padding-right: 50px;
+}
+
+.seances-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 30px;
+}
+
+.seance {
+  padding: 10px;
+  border-radius: 5px;
+  width: 250px;
+  background-color: #252628;
+  text-align: center;
+}
+
+.seance:hover {
+  background-color: #fdad00;
+}
+
+.seance img {
+  width: 100%;
+  margin-bottom: 10px;
+}
 
 
 /* Barre de scrooling */

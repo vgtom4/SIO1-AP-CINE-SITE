@@ -36,60 +36,64 @@ if (isset($_POST["date"]) && strtotime($_POST["date"])) {
 }
 ?>
 
-Sélectionnez une date de projection : 
-<!-- Bouton "previous" et "next" -->
-<form method="post">
-    <input type="hidden" name="date" value="<?php echo $date; ?>">
-    <input type="submit" name="btnprevious" value="Projections précédentes">
-    <input type='date' name='date' value='<?php echo $date ?>' onchange='form.submit()'/>
-    <input type="submit" name="btnnext" value="Projections suivantes">
-</form>
+<div class='search-bar-projection'>
+    <label>Sélectionnez une date de projection :</label></br>
+    <!-- Bouton "previous" et "next" -->
+    <form method="post">
+        <input type="hidden" name="date" value="<?php echo $date; ?>">
+        <input type="submit" name="btnprevious" value="<">
+        <input type='date' name='date' value='<?php echo $date ?>' onchange='form.submit()'/>
+        <input type="submit" name="btnnext" value=">">
+    </form>
+</div>
 <?php
 
 // Affichage de la date sélectionnée
 $dateproj = date('l j F Y', strtotime($date));?>
-<br><h2>Projections du <?php echo $dateproj ?>:</h2>
 
-<?php
 
-// Recherche des projections dans la base de données en fonction de la date sélectionnée
-$requete = ("select distinct * from projection natural join film where dateproj =:date order by heureproj, nosalle");
-$req = $bdd->prepare($requete);
-$req->bindParam(':date', $date, PDO::PARAM_STR);
-$req->execute();
-$uneligne = $req->fetch();
+<div class="liste-seances">
+    <br><h1>Projections du <?php echo $dateproj ?> :</h1>
+    <?php
+    // Recherche des projections dans la base de données en fonction de la date sélectionnée
+    $requete = ("select distinct * from projection natural join film where dateproj =:date order by heureproj, nosalle");
+    $req = $bdd->prepare($requete);
+    $req->bindParam(':date', $date, PDO::PARAM_STR);
+    $req->execute();
+    $uneligne = $req->fetch();
 
-// Vérifie si des projections ont été trouvées pour la date sélectionnée
-if ($uneligne) {
-    $horaire = "";
-    // Affichage des projections trouvées
-    while ($uneligne) {
-        if ($horaire != date('G\hi', strtotime($uneligne["heureproj"]))){
-            $horaire = date('G\hi', strtotime($uneligne["heureproj"]));?>
-            </br><h3>Séance(s) de <?php echo $horaire?></h3></br>
-        <?php } ?>
+    // Vérifie si des projections ont été trouvées pour la date sélectionnée
+    if ($uneligne) {
+        $horaire = "";
+        // Affichage des projections trouvées ?>
+        <div class='seances-grid'>
+        <?php while ($uneligne) {
+            if ($horaire != date('G\hi', strtotime($uneligne["heureproj"]))){
+                $horaire = date('G\hi', strtotime($uneligne["heureproj"]));?>
+                </div>
+                </br><h1>Séance(s) de <?php echo $horaire?></h1></br>
+                <div class='seances-grid'>
+            <?php } ?>
 
-        <!-- Affichage des informations de la projection -->
-        <table cellpadding='5'>
-            <tr>
-                <!-- Affichage de l'affiche et du titre du film -->
-                <td rowspan='7'><img src='assets/media/affiches/<?php echo $uneligne["imgaffiche"]?>' width=150px></td>
-                <td><?php echo $uneligne["titre"]?></td>
-            </tr>
-            <!-- Affichage de la durée du film -->
-            <tr><td>Durée : <?php echo date('G\hi', strtotime($uneligne["duree"]))?></td></tr>
             <!-- Affichage des informations de la projection -->
-            <tr><td><?php echo $uneligne["infoproj"]?></td></tr>
-            <tr><td>
+            <div class='seance'>
+                <!-- Affichage de l'affiche et du titre du film -->
+                <img src='assets/media/affiches/<?php echo $uneligne["imgaffiche"]?>' width=150px>
+                <?php echo $uneligne["titre"]?>
+
+                <!-- Affichage de la durée du film -->
+                </br><i>Durée : </i><?php echo date('G\hi', strtotime($uneligne["duree"]))?>
+
+                <!-- Affichage des informations de la projection -->
+                </br><i>Infos : </i><?php echo $uneligne["infoproj"]?>
+                
                 <!-- Affichage du bouton pour voir plus d'informations sur le film -->
                 <form id='form_<?php echo $uneligne["nofilm"]?>' method='post' action='film.php'>
                     <input type='hidden' name='nofilm' value='<?php echo $uneligne["nofilm"]?>'>
                     <input type='hidden' name='titre' value='<?php echo urlencode($uneligne["titre"])?>'>
                     <button type='submit'>Voir plus</button>
                 </form>
-            </td></tr>
-            
-            <tr><td>
+
                 <?php
                 // Recherche du nombre de places restantes pour la projection
                 $requete2 = ("select (select nbplaces from salle natural join projection where noproj=:noproj) - COALESCE((select sum(nbplacesresa) from reservation where noproj=:noproj),0) as nbplacerestante, nbplaces from salle natural join projection where noproj=:noproj");
@@ -102,7 +106,7 @@ if ($uneligne) {
                 // Si oui, affiche le nombre de places restantes et le bouton pour réserver
                 // Si non, affiche qu'il n'y a plus de places disponibles
                 if ($uneligne2["nbplacerestante"]>0){ ?>
-                    Place(s) disponible(s) : <?php echo $uneligne2["nbplacerestante"]."/".$uneligne2["nbplaces"]?>
+                    <i>Place(s) disponible(s) : </i><?php echo $uneligne2["nbplacerestante"]."/".$uneligne2["nbplaces"]?>
                     <form method='post' action='reservation.php'>
                         <input type='hidden' name='noproj' value='<?php echo $uneligne["noproj"]?>'>
                         <button type='submit'>Réserver pour cette séance</button>
@@ -110,24 +114,24 @@ if ($uneligne) {
                 <?php }else{ ?>
                     Aucune place disponible
                 <?php } ?>
-            </td></tr>
-        </table>
 
-        <!-- Affichage du bouton pour réserver la projection -->
-        <form id='form_<?php echo $uneligne["nofilm"]?>' method='post' action='reservation.php'>
-            <input type='hidden' name='nofilm' value='<?php echo $uneligne["nofilm"]?>'>
-            <input type='hidden' name='titre' value='<?php echo urlencode($uneligne["titre"])?>'>
-        </form>
-        </br>
+                <!-- Affichage du bouton pour réserver la projection -->
+                <form id='form_<?php echo $uneligne["nofilm"]?>' method='post' action='reservation.php'>
+                    <input type='hidden' name='nofilm' value='<?php echo $uneligne["nofilm"]?>'>
+                    <input type='hidden' name='titre' value='<?php echo urlencode($uneligne["titre"])?>'>
+                </form>
+            </div>
 
-        <?php $uneligne = $req->fetch();
-    } ?>
-    </table>
-<?php }else{ ?>
-    Il n'y a pas de projection pour cette date
-<?php }
-$req->closeCursor();
+            <?php $uneligne = $req->fetch();
+        } ?>
+        </div>
+    <?php }else{ ?>
+        <center><h3>Il n'y a pas de projection pour cette date</h3></center>
+    <?php }
+    $req->closeCursor(); ?>
+</div>
 
+<?php
 include("includes/deconnexion.php");
 include("includes/pagepied.php");
 ?>
