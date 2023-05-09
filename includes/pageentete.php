@@ -24,11 +24,6 @@ if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) { $pageAdmi
   <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/multi-select-tag.css">
   <link rel="stylesheet" href="<?php echo $pageAdmin ? "../../" : "" ?>assets/style/style.css">
 
-  <!-- Importation de bootstrap -->
-  <!-- <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/jquery/jquery-3.3.1.min.js"></script>
-  <script src="<?php echo $pageAdmin ? "../../" : "" ?>bootstrap/js/bootstrap.min.js"></script> -->
 </head>
 <body style="background-color: #1d1d1d;" class="text-light">
   <nav class="navbar">
@@ -52,8 +47,6 @@ if (strpos(dirname($_SERVER['PHP_SELF']), "/backoffice/restricted")) { $pageAdmi
           <a class='nav-link' href='home.php'>Accueil</a></li>
         <li class='nav-item <?php echo $currentPage == 'projection' ? "active" : null ?>'>
           <a class='nav-link' href='projection.php'>Projections</a></li>
-        <li class='nav-item'>
-          <a class='nav-link' href='backoffice/restricted/homeAdmin.php'>Gestion ADMIN</a></li>
       <?php } ?>
       </ul>
     </div>
