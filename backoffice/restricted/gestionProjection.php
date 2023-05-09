@@ -118,13 +118,49 @@ include("../../includes/info-film.php");
 
 <?php if ($erreur) echo ("</br></br><a href='homeAdmin.php'>Retour à l'accueil</a>") ?>
 
+<!-- Affichage du formulaire d'ajout de séances -->
+<div name='ajout-seance'>
+    <?php if (!$erreur){?>
+        </br></br>
+        <center><h1>Ajouter des séances</h1>
+        </br>
+        <!-- Formulaire permettant d'ajouter des séances -->
+        <form method='post'>
+            Informations sur la projection : <input type="text" name='txtInfo' value='<?php isset($_POST["txtInfo"]) ? $_POST["txtInfo"] : ''?>'></textarea>
+            </br>
+            <label for="salle-select">Salle :</label>
+            <select name="cbosalle" required>
+                <option value="" selected>Sélectionner une salle</option>
+                <?php
+                // Recherche des salles dans la base de données
+                $req = $bdd->prepare("select * from salle");
+                $req->execute();
+                $uneligne = $req->fetch();
+                while ($uneligne)
+                {
+                    // Affichage des salles dans une liste déroulante
+                    echo ("<option value=$uneligne[nosalle]>$uneligne[nosalle]</option>");
+                    $uneligne = $req->fetch();
+                }
+                $req->closeCursor();
+                ?>
+            </select>
+            </br>Date : <input type='date' name='date' value='<?php echo isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' required/>
+            </br>Heure : <input type='time' name='time' value='<?php echo isset($_POST["time"]) ? $_POST["time"] : date("H:i") ?>' required/><br />
+            <input type='hidden' name='nofilm' value='<?php echo $_POST["nofilm"] ?>'>
+            <input type='submit' name='btnajouter' value='Ajouter'>
+        </form>
+        </center>
+    <?php } ?>
+</div>
+
 <!-- Affichage des séances du film -->
-<div name='seance-film'>
+<div class='seance-film'>
     </br>
     <?php 
     // Si aucune erreur n'est survenue, on affiche les séances du film
     if (!$erreur){?>
-        <h1>Séances</h1>
+        <center><h1>Gestion des séances</h1></center>
         
         <?php
         // Recherche des séances du film dans la base de données
@@ -186,41 +222,6 @@ include("../../includes/info-film.php");
         <?php }
         $req->closeCursor();
     } ?>
-</div>
-
-<!-- Affichage du formulaire d'ajout de séances -->
-<div name='ajout-seance'>
-    <?php if (!$erreur){?>
-        </br></br>
-        <h1>Ajouter des séances</h1>
-        </br>
-        <!-- Formulaire permettant d'ajouter des séances -->
-        <form method='post'>
-            Informations sur la projection : <input type="text" name='txtInfo' value='<?php isset($_POST["txtInfo"]) ? $_POST["txtInfo"] : ''?>'></textarea>
-            </br>
-            <label for="salle-select">Salle :</label>
-            <select name="cbosalle" required>
-                <option value="" selected>Sélectionner une salle</option>
-                <?php
-                // Recherche des salles dans la base de données
-                $req = $bdd->prepare("select * from salle");
-                $req->execute();
-                $uneligne = $req->fetch();
-                while ($uneligne)
-                {
-                    // Affichage des salles dans une liste déroulante
-                    echo ("<option value=$uneligne[nosalle]>$uneligne[nosalle]</option>");
-                    $uneligne = $req->fetch();
-                }
-                $req->closeCursor();
-                ?>
-            </select>
-            </br>Date : <input type='date' name='date' value='<?php echo isset($_POST["date"]) ? $_POST["date"] : date("Y-m-d") ?>' required/>
-            </br>Heure : <input type='time' name='time' value='<?php echo isset($_POST["time"]) ? $_POST["time"] : date("H:i") ?>' required/><br />
-            <input type='hidden' name='nofilm' value='<?php echo $_POST["nofilm"] ?>'>
-            <input type='submit' name='btnajouter' value='Ajouter'>
-        </form>
-    <?php } ?>
 </div>
 
 <?php 

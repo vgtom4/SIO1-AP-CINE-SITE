@@ -132,9 +132,9 @@ body {
     height: 35px;
   }
 
-    .search-bar input[type="text"]:hover,
-    .search-bar input[type="submit"]:hover,
-    .search-bar select:hover 
+    input[type="text"]:hover,
+    input[type="submit"]:hover,
+    select:hover 
     {
         background-color: #fdad00;
         color: #17181C;
@@ -213,8 +213,13 @@ body {
 .search-bar-projection label {
   font-weight: bold;
 }
- 
-.search-bar-projection input[type="date"] {
+
+input[type="number"],
+input[type="submit"],
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select {
   padding: 5px;
   margin-bottom: 10px;
   border: none;
@@ -226,12 +231,21 @@ body {
   cursor: pointer;
 }
 
-.search-bar-projection input[type="submit"]:hover,
-.search-bar-projection input[type="date"]:hover
+input[type="number"]:hover,
+input[type="submit"]:hover,
+input[type="text"]:hover,
+input[type="date"]:hover,
+input[type="time"]:hover,
+select:hover 
 {
   background-color: #fdad00;
   color: #17181C;
-}     
+}        
+
+.search-bar input[type="text"]::selection{
+    background-color: #17181C;
+    color: #fdad00;
+}
 
 .search-bar-projection input[type="submit"] {
   padding: 10px;
@@ -244,6 +258,19 @@ body {
   border: none;
   cursor: pointer;
 }
+
+
+  .search-bar select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #FDC300;
+    font-weight: bold;
+  }
 
 
 /* Séance */
@@ -277,8 +304,11 @@ body {
 }
 
 
-/* Info Film */
-.info-film {
+
+/* Autres */
+.info-film,
+.reservation-info,
+.reservation-form {
   margin-top: 50px;
   padding-left: 100px;
   padding-right: 100px;
@@ -305,7 +335,7 @@ body {
   padding-right: 100px;
 }
 
-.seance-film button {
+button {
   color: #17181C;
   padding: 5px;
   margin-bottom: 10px;
@@ -318,11 +348,24 @@ body {
   cursor: pointer;
 }
 
-.seance-film button:hover {
+button:hover {
   background-color: #fdad00;
   color: #17181C;
 }
 
+
+.reservation-form a{
+  color: #17181C;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #FDC300;
+  font-weight: bold;
+  cursor: pointer;
+}
 
 
 /* Barre de scrooling */

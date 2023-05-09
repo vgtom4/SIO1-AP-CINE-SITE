@@ -41,9 +41,9 @@ if (isset($_POST["date"]) && strtotime($_POST["date"])) {
     <!-- Bouton "previous" et "next" -->
     <form method="post">
         <input type="hidden" name="date" value="<?php echo $date; ?>">
-        <input type="submit" name="btnprevious" value="<">
+        <input type="submit" name="btnprevious" placeholder="Voir les séances précédentes" value="<">
         <input type='date' name='date' value='<?php echo $date ?>' onchange='form.submit()'/>
-        <input type="submit" name="btnnext" value=">">
+        <input type="submit" name="btnnext" placeholder="Voir les séances suivantes" value=">">
     </form>
 </div>
 <?php
